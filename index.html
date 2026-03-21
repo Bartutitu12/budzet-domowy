@@ -48,7 +48,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .header-sub{font-size:13px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
 
 /* user chip in header */
-.user-chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace}
+.user-chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;border:none;cursor:pointer}
 .chip-maz{background:var(--man-bg);color:var(--man)}
 .chip-zona{background:var(--wife-bg);color:var(--wife)}
 
@@ -192,7 +192,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-wydatek" class="screen active">
     <div class="header">
       <div><div class="header-title">💸 Wydatek</div><div class="header-sub" id="date-display"></div></div>
-      <div class="user-chip" id="user-chip-w">👨 Bartek</div>
+      <button class="user-chip" id="user-chip-w" onclick="clearSession()" title="Wyloguj / zmień PIN">👨 Bartek</button>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -213,7 +213,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-wplyw" class="screen">
     <div class="header">
       <div><div class="header-title">💵 Wpływ</div><div class="header-sub" id="date-display-w"></div></div>
-      <div class="user-chip" id="user-chip-i">👨 Bartek</div>
+      <button class="user-chip" id="user-chip-i" onclick="clearSession()" title="Wyloguj / zmień PIN">👨 Bartek</button>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -234,7 +234,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-historia" class="screen">
     <div class="header">
       <div><div class="header-title">📋 Historia</div></div>
-      <button class="refresh-btn" onclick="loadAllData()">↻</button>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadAllData()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
     </div>
     <div class="month-picker">
       <button class="mpick-btn" onclick="changeMonth(-1)">‹</button>
@@ -261,7 +261,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-budzet" class="screen">
     <div class="header">
       <div><div class="header-title">🎯 Budżet</div><div class="header-sub" id="budget-month"></div></div>
-      <button class="refresh-btn" onclick="loadBudzet()">↻</button>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudzet()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
     </div>
     <div class="zona-card">
       <div class="zona-card-title">👩 Budżet Weroniki</div>
