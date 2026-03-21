@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f14">
+<title>Budżet Domowy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f14;--bg2:#17171f;--bg3:#1e1e28;--border:rgba(255,255,255,0.07);--text:#f0eff5;--muted:#6b6a7a;--man:#4da6ff;--man-bg:rgba(77,166,255,0.12);--wife:#c084fc;--wife-bg:rgba(192,132,252,0.12);--green:#34d399;--amber:#fbbf24;--red:#f87171;--accent:#4da6ff;--radius:16px;--rsm:10px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overscroll-behavior:none}
+
+/* PIN */
+.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:40px 20px}
+.pin-logo{font-size:48px;margin-bottom:16px}
+.pin-title{font-size:24px;font-weight:600;letter-spacing:-.5px;margin-bottom:6px}
+.pin-sub{font-size:14px;color:var(--muted);margin-bottom:40px;text-align:center}
+.pin-dots{display:flex;gap:16px;margin-bottom:40px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--muted);transition:all .15s}
+.pin-dot.filled{border-color:var(--accent)}
+.pin-dot.filled-zona{border-color:var(--wife)}
+.pin-dot.filled::after,.pin-dot.filled-zona::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:currentColor}
+.pin-dot.filled::after{background:var(--accent)}
+.pin-dot.filled-zona::after{background:var(--wife)}
+.pin-dot.error{border-color:var(--red)}
+.pin-dot.error::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--red)}
+.pin-dot.success{border-color:var(--green)}
+.pin-dot.success::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--green)}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
+.pin-key{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;font-size:22px;font-weight:500;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;text-align:center;transition:all .1s}
+.pin-key:active{background:var(--bg3);transform:scale(.95)}
+.pin-key.del{font-size:18px;color:var(--muted)}
+.pin-key.empty{background:transparent;border-color:transparent;cursor:default}
+.pin-error{font-size:13px;color:var(--red);margin-top:20px;min-height:20px;text-align:center}
+.pin-user-badge{margin-bottom:24px;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:600;opacity:0;transition:opacity .3s}
+.pin-user-badge.show-maz{background:var(--man-bg);color:var(--man);opacity:1}
+.pin-user-badge.show-zona{background:var(--wife-bg);color:var(--wife);opacity:1}
+.logout-btn{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 8px;margin-top:20px}
+
+/* APP */
+.app{display:none;padding-bottom:90px}
+.app.visible{display:block}
+.header{padding:52px 20px 16px;display:flex;justify-content:space-between;align-items:flex-end}
+.header-title{font-size:26px;font-weight:600;letter-spacing:-.5px}
+.header-sub{font-size:13px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+
+/* user chip in header */
+.user-chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace}
+.chip-maz{background:var(--man-bg);color:var(--man)}
+.chip-zona{background:var(--wife-bg);color:var(--wife)}
+
+.section{padding:0 20px 24px}
+.section-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.field{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px}
+.field:last-child{border-bottom:none}
+.field-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--bg3)}
+.field-body{flex:1;min-width:0}
+.field-label{font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:500}
+.field input,.field select{width:100%;background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--text);appearance:none;-webkit-appearance:none}
+.field input::placeholder{color:var(--muted);font-weight:400}
+.field input[type=date]{color-scheme:dark}
+.field select option{background:#1e1e28;color:var(--text)}
+.amount-wrapper{display:flex;align-items:center;gap:6px;width:100%}
+.amount-wrapper input{font-size:24px;font-weight:300;letter-spacing:-.5px}
+.amount-unit{font-size:16px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0}
+
+/* owner row — hidden when auto-set */
+.owner-toggle{display:flex;gap:8px;width:100%}
+.owner-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted)}
+.owner-btn.maz.active{background:var(--man-bg);border-color:var(--man);color:var(--man)}
+.owner-btn.zona.active{background:var(--wife-bg);border-color:var(--wife);color:var(--wife)}
+.owner-info{font-size:13px;color:var(--muted);padding:4px 0}
+
+.btn-submit{width:100%;padding:16px;border-radius:var(--radius);border:none;background:var(--accent);color:#000;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit:active{transform:scale(.98);opacity:.9}
+.btn-submit.loading{opacity:.6;pointer-events:none}
+.btn-submit.wife{background:var(--wife)}
+.spinner{width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.loading .spinner{display:block}.loading .btn-text{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:12px 20px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:100}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.fail{border-color:var(--red);color:var(--red)}
+
+.history-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px}
+.history-item:last-child{border-bottom:none}
+.history-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-maz{background:var(--man)}.dot-zona{background:var(--wife)}
+.history-body{flex:1;min-width:0}
+.history-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-meta{font-size:12px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.history-amount{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;flex-shrink:0}
+.amt-maz{color:var(--man)}.amt-zona{color:var(--wife)}.amt-inc{color:var(--green)}
+.history-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:14px}
+.btn-del{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px 8px;border-radius:6px;flex-shrink:0}
+.btn-del:active{background:rgba(248,113,113,.15);color:var(--red)}
+
+.del-confirm{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.del-confirm.show{opacity:1;pointer-events:all}
+.del-sheet{background:var(--bg2);border-radius:24px 24px 0 0;padding:28px 20px 40px;width:100%;border-top:1px solid var(--border)}
+.del-sheet h3{font-size:18px;font-weight:600;margin-bottom:8px}
+.del-sheet p{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+.del-actions{display:flex;gap:10px}
+.btn-cancel{flex:1;padding:14px;border-radius:var(--rsm);border:1px solid var(--border);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer}
+.btn-confirm-del{flex:1;padding:14px;border-radius:var(--rsm);border:none;background:var(--red);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,15,20,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:50}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;transition:color .2s}
+.nav-btn.active{color:var(--accent)}
+.nav-icon{font-size:22px;line-height:1}
+.screen{display:none}.screen.active{display:block}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.stat-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-.5px}
+.stat-maz{color:var(--man)}.stat-zona{color:var(--wife)}.stat-total{color:var(--text)}.stat-cnt{color:var(--green)}
+
+.month-picker{display:flex;align-items:center;gap:8px;padding:0 20px 16px}
+.mpick-btn{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 16px;color:var(--text);font-size:18px;cursor:pointer}
+.mpick-btn:active{background:var(--bg3)}
+.mpick-label{flex:1;text-align:center;font-size:15px;font-weight:500;font-family:'DM Mono',monospace;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px}
+.type-toggle{display:flex;gap:6px;padding:0 20px 16px}
+.type-btn{flex:1;padding:9px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;text-align:center}
+.type-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+.type-btn.active.inc{background:var(--green);border-color:var(--green)}
+
+.refresh-btn{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.zona-card{margin:0 20px 16px;background:var(--wife-bg);border:1px solid rgba(192,132,252,.25);border-radius:var(--radius);padding:18px}
+.zona-card-title{font-size:12px;color:var(--wife);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.zona-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.zona-label{font-size:13px;color:var(--muted)}
+.zona-val{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--wife)}
+.zona-bar-wrap{height:4px;background:rgba(192,132,252,.2);border-radius:2px;margin-top:10px;overflow:hidden}
+.zona-bar{height:100%;background:var(--wife);border-radius:2px;transition:width .6s ease}
+.budget-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px}
+.budget-row:last-child{border-bottom:none}
+.budget-row-left{flex:1;min-width:0}
+.budget-row-name{font-size:13px;font-weight:500;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.budget-bar-wrap{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:3px}
+.budget-bar{height:100%;border-radius:2px;transition:width .6s ease}
+.bar-ok{background:var(--green)}.bar-warn{background:var(--amber)}.bar-over{background:var(--red)}
+.budget-row-right{text-align:right;flex-shrink:0;min-width:90px}
+.budget-spent{font-size:14px;font-weight:600;font-family:'DM Mono',monospace}
+.budget-limit{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px}
+.budget-persons{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.budget-loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen" class="pin-screen">
+  <div class="pin-logo">🏠</div>
+  <div class="pin-title">Budżet Domowy</div>
+  <div class="pin-sub">Wprowadź swój PIN</div>
+  <div class="pin-user-badge" id="pin-badge"></div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key empty"></button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <button class="logout-btn" onclick="clearSession()">Wyloguj / zmień użytkownika</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="app">
+
+  <!-- WYDATEK -->
+  <div id="screen-wydatek" class="screen active">
+    <div class="header">
+      <div><div class="header-title">💸 Wydatek</div><div class="header-sub" id="date-display"></div></div>
+      <div class="user-chip" id="user-chip-w">👨 Mąż</div>
+    </div>
+    <div class="section">
+      <div class="section-label">Szczegóły</div>
+      <div class="card">
+        <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="kwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
+        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria"><option value="">Wybierz...</option><option>Spożywka</option><option>Paliwo</option><option>Restauracje</option><option>Rachunki stałe</option><option>Abonamenty</option><option>Zdrowie / apteka</option><option>Odzież</option><option>Rozrywka</option><option>Dziecko</option><option>Budowa</option><option>Dom</option><option>Samochód</option><option>Inne</option></select></div></div>
+        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis" placeholder="np. Biedronka..."></div></div>
+        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wydatek"></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <button class="btn-submit" id="btn-wydatek" onclick="submitWydatek()"><span class="btn-text">✓ Dodaj wydatek</span><div class="spinner"></div></button>
+    </div>
+  </div>
+
+  <!-- WPŁYW -->
+  <div id="screen-wplyw" class="screen">
+    <div class="header">
+      <div><div class="header-title">💵 Wpływ</div><div class="header-sub" id="date-display-w"></div></div>
+      <div class="user-chip" id="user-chip-i">👨 Mąż</div>
+    </div>
+    <div class="section">
+      <div class="section-label">Szczegóły</div>
+      <div class="card">
+        <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="kwota-w" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
+        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria-w"><option value="">Wybierz...</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Inne</option></select></div></div>
+        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-w" placeholder="np. Wynagrodzenie..."></div></div>
+        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wplyw"></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <button class="btn-submit" id="btn-wplyw" onclick="submitWplyw()"><span class="btn-text">✓ Dodaj wpływ</span><div class="spinner"></div></button>
+    </div>
+  </div>
+
+  <!-- HISTORIA -->
+  <div id="screen-historia" class="screen">
+    <div class="header">
+      <div><div class="header-title">📋 Historia</div></div>
+      <button class="refresh-btn" onclick="loadAllData()">↻</button>
+    </div>
+    <div class="month-picker">
+      <button class="mpick-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="mpick-label" id="hist-month-label"></div>
+      <button class="mpick-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="type-toggle">
+      <button class="type-btn active" id="type-wydatki" onclick="setHistType('wydatki',this)">💸 Wydatki</button>
+      <button class="type-btn" id="type-wplywy" onclick="setHistType('wplywy',this)">💵 Wpływy</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Mąż</div><div class="stat-value stat-maz" id="stat-maz">—</div></div>
+      <div class="stat-card"><div class="stat-label">Żona</div><div class="stat-value stat-zona" id="stat-zona">—</div></div>
+      <div class="stat-card"><div class="stat-label">Razem</div><div class="stat-value stat-total" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Wpisów</div><div class="stat-value stat-cnt" id="stat-count">—</div></div>
+    </div>
+    <div class="section">
+      <div class="section-label" id="hist-list-label">Wydatki</div>
+      <div class="card" id="history-list"><div class="history-empty">Ładowanie...</div></div>
+    </div>
+  </div>
+
+  <!-- BUDŻET -->
+  <div id="screen-budzet" class="screen">
+    <div class="header">
+      <div><div class="header-title">🎯 Budżet</div><div class="header-sub" id="budget-month"></div></div>
+      <button class="refresh-btn" onclick="loadBudzet()">↻</button>
+    </div>
+    <div class="zona-card">
+      <div class="zona-card-title">👩 Budżet żony</div>
+      <div class="zona-row"><span class="zona-label">Przelew miesięczny</span><span class="zona-val" id="z-przelew">—</span></div>
+      <div class="zona-row"><span class="zona-label">Wydała dotychczas</span><span class="zona-val" id="z-wydala">—</span></div>
+      <div class="zona-row"><span class="zona-label">Pozostało</span><span class="zona-val" id="z-pozostalo">—</span></div>
+      <div class="zona-bar-wrap"><div class="zona-bar" id="z-bar" style="width:0%"></div></div>
+    </div>
+    <div class="section">
+      <div class="section-label">Kategorie — Mąż</div>
+      <div class="card" id="budzet-list"><div class="budget-loading">Ładowanie...</div></div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-btn active" id="nav-wydatek"  onclick="switchScreen('wydatek')"><span class="nav-icon">💸</span>Wydatek</button>
+  <button class="nav-btn"        id="nav-wplyw"    onclick="switchScreen('wplyw')"><span class="nav-icon">💵</span>Wpływ</button>
+  <button class="nav-btn"        id="nav-historia" onclick="switchScreen('historia')"><span class="nav-icon">📋</span>Historia</button>
+  <button class="nav-btn"        id="nav-budzet"   onclick="switchScreen('budzet')"><span class="nav-icon">🎯</span>Budżet</button>
+</nav>
+
+<div class="del-confirm" id="del-confirm">
+  <div class="del-sheet">
+    <h3>Usunąć wpis?</h3>
+    <p id="del-desc">Ten wpis zostanie trwale usunięty.</p>
+    <div class="del-actions">
+      <button class="btn-cancel" onclick="cancelDel()">Anuluj</button>
+      <button class="btn-confirm-del" onclick="confirmDel()">Usuń</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwOKd97gCQ0QtLIvEXxCEGwW1muVooFeRtxTuJ69oereFAzJDUTsPbsyqRwiF5mlPcBVg/exec";
+const MP  = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+
+// ── STATE ──
+let savedPin   = localStorage.getItem("bdpin")  || "";
+let currentUser= localStorage.getItem("bduser") || ""; // "Mąż" lub "Żona"
+let pinBuffer  = "";
+let pendingDel = null;
+let histType   = "wydatki";
+let histYear   = new Date().getFullYear();
+let histMonth  = new Date().getMonth();
+let allWydatki = [];
+let allWplywy  = [];
+
+// ── PIN ──
+function pinKey(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updateDots();
+  if (pinBuffer.length === 4) setTimeout(verifyPin, 120);
+}
+function pinDel() {
+  pinBuffer = pinBuffer.slice(0,-1);
+  updateDots();
+  document.getElementById("pin-error").textContent = "";
+  document.getElementById("pin-badge").className = "pin-user-badge";
+}
+function updateDots(cls="filled") {
+  for (let i=0;i<4;i++) {
+    const d = document.getElementById("d"+i);
+    d.className = "pin-dot" + (i < pinBuffer.length ? " "+cls : "");
+  }
+}
+
+async function verifyPin() {
+  // Jeśli ten sam PIN co zapisany — zaloguj bez API
+  if (savedPin && pinBuffer === savedPin && currentUser) {
+    pinSuccess(currentUser);
+    return;
+  }
+  try {
+    const r = await fetch(API + "?action=login&pin=" + pinBuffer);
+    const j = await r.json();
+    if (j.status === "ok") {
+      localStorage.setItem("bdpin",  pinBuffer);
+      localStorage.setItem("bduser", j.osoba);
+      savedPin    = pinBuffer;
+      currentUser = j.osoba;
+      pinSuccess(j.osoba);
+    } else {
+      pinFail();
+    }
+  } catch {
+    pinFail("Brak połączenia");
+  }
+}
+
+function pinSuccess(osoba) {
+  const isMaz = osoba === "Mąż";
+  // Pokaż badge
+  const badge = document.getElementById("pin-badge");
+  badge.textContent = isMaz ? "👨 Mąż" : "👩 Żona";
+  badge.className   = "pin-user-badge " + (isMaz ? "show-maz" : "show-zona");
+  updateDots(isMaz ? "filled" : "filled-zona");
+  // Zmień na kolor użytkownika
+  for (let i=0;i<4;i++) document.getElementById("d"+i).className = "pin-dot success";
+  setTimeout(() => {
+    document.getElementById("pin-screen").style.display = "none";
+    document.getElementById("app").classList.add("visible");
+    document.getElementById("bottom-nav").style.display = "flex";
+    initApp(osoba);
+  }, 350);
+}
+
+function pinFail(msg) {
+  updateDots("error");
+  document.getElementById("pin-error").textContent = msg || "Nieprawidłowy PIN";
+  setTimeout(() => { pinBuffer = ""; updateDots(); }, 800);
+}
+
+function clearSession() {
+  localStorage.removeItem("bdpin");
+  localStorage.removeItem("bduser");
+  savedPin = ""; currentUser = "";
+  showToast("Wylogowano","ok");
+}
+
+// ── APP INIT ──
+function initApp(osoba) {
+  const isMaz = osoba === "Mąż";
+  const t = new Date().toISOString().split("T")[0];
+  document.getElementById("data-wydatek").value = t;
+  document.getElementById("data-wplyw").value   = t;
+
+  const n  = new Date();
+  const ds = n.toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"});
+  document.getElementById("date-display").textContent   = ds;
+  document.getElementById("date-display-w").textContent = ds;
+
+  // Chip z nazwą użytkownika
+  const chipLabel = isMaz ? "👨 Mąż" : "👩 Żona";
+  const chipCls   = isMaz ? "chip-maz" : "chip-zona";
+  document.getElementById("user-chip-w").textContent = chipLabel;
+  document.getElementById("user-chip-w").className   = "user-chip " + chipCls;
+  document.getElementById("user-chip-i").textContent = chipLabel;
+  document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
+
+  // Kolor przycisku submit
+  document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
+  document.getElementById("btn-wplyw").classList.toggle("wife",   !isMaz);
+
+  updateHistMonthLabel();
+  loadAllData();
+}
+
+function switchScreen(n) {
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("screen-"+n).classList.add("active");
+  document.getElementById("nav-"+n).classList.add("active");
+  if (n==="budzet") loadBudzet();
+}
+
+function showToast(msg,type="ok") {
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.className="toast "+type+" show";
+  setTimeout(()=>t.className="toast",2800);
+}
+
+function todayStr(){return new Date().toISOString().split("T")[0]}
+
+// ── SUBMIT ──
+async function submitWydatek() {
+  const kwota=document.getElementById("kwota").value;
+  const kat  =document.getElementById("kategoria").value;
+  const opis =document.getElementById("opis").value;
+  const data =document.getElementById("data-wydatek").value;
+  if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
+  if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
+  const btn=document.getElementById("btn-wydatek"); btn.classList.add("loading");
+  try {
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:kat,opis:opis||kat,data,kto:currentUser})});
+    const j=await r.json();
+    if(j.status==="ok"){
+      showToast("✓ Zapisano!","ok");
+      document.getElementById("kwota").value="";
+      document.getElementById("opis").value="";
+      document.getElementById("kategoria").value="";
+      document.getElementById("data-wydatek").value=todayStr();
+      loadAllData();
+    } else showToast("❌ "+j.message,"fail");
+  } catch { showToast("❌ Brak połączenia","fail"); }
+  btn.classList.remove("loading");
+}
+
+async function submitWplyw() {
+  const kwota=document.getElementById("kwota-w").value;
+  const kat  =document.getElementById("kategoria-w").value;
+  const opis =document.getElementById("opis-w").value;
+  const data =document.getElementById("data-wplyw").value;
+  if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
+  if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
+  const btn=document.getElementById("btn-wplyw"); btn.classList.add("loading");
+  try {
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:kat,opis:opis||kat,data,kto:currentUser})});
+    const j=await r.json();
+    if(j.status==="ok"){
+      showToast("✓ Zapisano!","ok");
+      document.getElementById("kwota-w").value="";
+      document.getElementById("opis-w").value="";
+      document.getElementById("kategoria-w").value="";
+      document.getElementById("data-wplyw").value=todayStr();
+      loadAllData();
+    } else showToast("❌ "+j.message,"fail");
+  } catch { showToast("❌ Brak połączenia","fail"); }
+  btn.classList.remove("loading");
+}
+
+// ── LOAD DATA ──
+async function loadAllData() {
+  try {
+    const [rw,ri] = await Promise.all([
+      fetch(API+"?action=pobierzWydatki&pin="+savedPin),
+      fetch(API+"?action=pobierzWplywy&pin="+savedPin)
+    ]);
+    const jw=await rw.json(); const ji=await ri.json();
+    if(jw.status==="ok") allWydatki=jw.data||[];
+    if(ji.status==="ok") allWplywy =ji.data||[];
+    renderHistory();
+  } catch { showToast("❌ Błąd ładowania","fail"); }
+}
+
+// ── HISTORY ──
+function updateHistMonthLabel() {
+  document.getElementById("hist-month-label").textContent = MP[histMonth]+" "+histYear;
+}
+function changeMonth(dir) {
+  histMonth+=dir;
+  if(histMonth>11){histMonth=0;histYear++}
+  if(histMonth<0){histMonth=11;histYear--}
+  updateHistMonthLabel(); renderHistory();
+}
+function setHistType(type,el) {
+  histType=type;
+  document.querySelectorAll(".type-btn").forEach(b=>b.classList.remove("active","inc"));
+  el.classList.add("active"); if(type==="wplywy") el.classList.add("inc");
+  document.getElementById("hist-list-label").textContent=type==="wydatki"?"Wydatki":"Wpływy";
+  renderHistory();
+}
+function renderHistory() {
+  const cm=MP[histMonth], cy=histYear;
+  const data=histType==="wydatki"?allWydatki:allWplywy;
+  const filtered=data.filter(i=>i.miesiac===cm&&i.rok==cy);
+  let ms=0,zs=0;
+  filtered.forEach(i=>{
+    if(i.kto==="Mąż")  ms+=parseFloat(i.kwota)||0;
+    if(i.kto==="Żona") zs+=parseFloat(i.kwota)||0;
+  });
+  document.getElementById("stat-maz").textContent  =fmt(ms);
+  document.getElementById("stat-zona").textContent =fmt(zs);
+  document.getElementById("stat-total").textContent=fmt(ms+zs);
+  document.getElementById("stat-count").textContent=filtered.length;
+  const list=document.getElementById("history-list");
+  if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów za '+cm+" "+cy+"</div>";return}
+  const isInc=histType==="wplywy";
+  list.innerHTML=filtered.map(i=>{
+    const im=i.kto==="Mąż";
+    const desc=(i.opis||i.kategoria).replace(/'/g,"\\'");
+    return`<div class="history-item">
+      <div class="history-dot ${im?'dot-maz':'dot-zona'}"></div>
+      <div class="history-body">
+        <div class="history-desc">${i.opis||i.kategoria}</div>
+        <div class="history-meta">${i.data} · ${i.kategoria} · ${i.kto}</div>
+      </div>
+      <div class="history-amount ${isInc?'amt-inc':im?'amt-maz':'amt-zona'}">${fmt(i.kwota)}</div>
+      <button class="btn-del" onclick="askDel(${i.sheetRow},'${desc}','${isInc?'usunWplyw':'usunWydatek'}')">✕</button>
+    </div>`;
+  }).join("");
+}
+
+// ── DELETE ──
+function askDel(row,desc,action){pendingDel={row,action};document.getElementById("del-desc").textContent=`„${desc}" zostanie trwale usunięty.`;document.getElementById("del-confirm").classList.add("show")}
+function cancelDel(){pendingDel=null;document.getElementById("del-confirm").classList.remove("show")}
+async function confirmDel(){
+  if(!pendingDel)return;
+  document.getElementById("del-confirm").classList.remove("show");
+  const{row,action}=pendingDel;pendingDel=null;
+  try{const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action,rowIndex:row})});const j=await r.json();if(j.status==="ok"){showToast("✓ Usunięto","ok");loadAllData()}else showToast("❌ "+j.message,"fail")}catch{showToast("❌ Brak połączenia","fail")}
+}
+
+// ── BUDŻET ──
+async function loadBudzet(){
+  document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
+  try{
+    const r=await fetch(API+"?action=pobierzBudzet&pin="+savedPin);const j=await r.json();
+    if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
+    document.getElementById("budget-month").textContent=j.miesiac||"";
+    const p=j.przelew||0,zw=j.zonaWydala||0,zpct=p>0?Math.min(zw/p*100,100):0;
+    document.getElementById("z-przelew").textContent=fmt(p);
+    document.getElementById("z-wydala").textContent=fmt(zw);
+    document.getElementById("z-pozostalo").textContent=fmt(p-zw);
+    document.getElementById("z-bar").style.width=zpct+"%";
+    const rows=(j.kategorie||[]).filter(k=>k.budzet>0||k.razem>0);
+    if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak danych</div>';return}
+    document.getElementById("budzet-list").innerHTML=rows.map(k=>{
+      const pct=k.budzet>0?Math.min(k.maz/k.budzet*100,100):0;
+      const bc=pct>=100?"bar-over":pct>=80?"bar-warn":"bar-ok";
+      const sc=pct>=100?"var(--red)":pct>=80?"var(--amber)":"var(--text)";
+      const persons=k.maz>0||k.zona>0?`👨 ${fmt(k.maz)}  👩 ${fmt(k.zona)}`:"brak wydatków";
+      return`<div class="budget-row"><div class="budget-row-left"><div class="budget-row-name">${k.nazwa}</div><div class="budget-bar-wrap"><div class="budget-bar ${bc}" style="width:${pct}%"></div></div><div class="budget-persons">${persons}</div></div><div class="budget-row-right"><div class="budget-spent" style="color:${sc}">${fmt(k.razem)}</div><div class="budget-limit">z ${fmt(k.budzet)}</div></div></div>`;
+    }).join("");
+  }catch{document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ Błąd połączenia</div>'}
+}
+
+function fmt(v){return(parseFloat(v)||0).toLocaleString("pl-PL",{minimumFractionDigits:0,maximumFractionDigits:2})+" zł"}
+
+// ── START ──
+if (savedPin && currentUser) {
+  document.getElementById("pin-screen").style.display = "none";
+  document.getElementById("app").classList.add("visible");
+  document.getElementById("bottom-nav").style.display = "flex";
+  initApp(currentUser);
+}
+</script>
+</body>
+</html>
