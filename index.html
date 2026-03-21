@@ -201,7 +201,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria"><option value="">Wybierz...</option><option>Spożywka</option><option>Paliwo</option><option>Restauracje</option><option>Rachunki stałe</option><option>Abonamenty</option><option>Zdrowie / apteka</option><option>Odzież</option><option>Rozrywka</option><option>Dziecko</option><option>Budowa</option><option>Dom</option><option>Samochód</option><option>Inne</option></select></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis" placeholder="np. Biedronka..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wydatek"></div></div>
-        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Kto płaci</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('Mąż')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('Żona')">Weronika</button></div></div></div>
+        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Kto płaci</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('bartek')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('weronika')">Weronika</button></div></div></div>
       </div>
     </div>
     <div class="section">
@@ -222,7 +222,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria-w"><option value="">Wybierz...</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Inne</option></select></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-w" placeholder="np. Wynagrodzenie..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wplyw"></div></div>
-        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Czyj wpływ</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('Mąż')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('Żona')">Weronika</button></div></div></div>
+        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Czyj wpływ</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('bartek')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('weronika')">Weronika</button></div></div></div>
       </div>
     </div>
     <div class="section">
@@ -313,11 +313,12 @@ function displayName(osoba) {
   return osoba === "Mąż" ? "Bartek" : osoba === "Żona" ? "Weronika" : osoba;
 }
 
-function setOwner(osoba) {
-  currentKto = osoba;
-  const isMaz = osoba === "Mąż";
-  document.querySelectorAll(".own-bartek").forEach(b => b.classList.toggle("active", isMaz));
-  document.querySelectorAll(".own-weronika").forEach(b => b.classList.toggle("active", !isMaz));
+function setOwner(kto) {
+  // kto: 'bartek' lub 'weronika'
+  currentKto = kto === 'bartek' ? "Mąż" : "Żona";
+  const isMaz = kto === 'bartek';
+  document.querySelectorAll(".own-bartek").forEach(b => { if(isMaz) b.classList.add("active"); else b.classList.remove("active"); });
+  document.querySelectorAll(".own-weronika").forEach(b => { if(!isMaz) b.classList.add("active"); else b.classList.remove("active"); });
   document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
   document.getElementById("btn-wplyw").classList.toggle("wife", !isMaz);
 }
@@ -426,7 +427,7 @@ function initApp(osoba) {
   document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
 
   // Domyślnie kto płaci = zalogowana osoba
-  setOwner(osoba);
+  setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
 
   updateHistMonthLabel();
   loadAllData();
