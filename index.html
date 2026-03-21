@@ -192,7 +192,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-wydatek" class="screen active">
     <div class="header">
       <div><div class="header-title">💸 Wydatek</div><div class="header-sub" id="date-display"></div></div>
-      <div class="user-chip" id="user-chip-w">👨 Mąż</div>
+      <div class="user-chip" id="user-chip-w">👨 Bartek</div>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -201,6 +201,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria"><option value="">Wybierz...</option><option>Spożywka</option><option>Paliwo</option><option>Restauracje</option><option>Rachunki stałe</option><option>Abonamenty</option><option>Zdrowie / apteka</option><option>Odzież</option><option>Rozrywka</option><option>Dziecko</option><option>Budowa</option><option>Dom</option><option>Samochód</option><option>Inne</option></select></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis" placeholder="np. Biedronka..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wydatek"></div></div>
+        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Kto płaci</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('Mąż')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('Żona')">Weronika</button></div></div></div>
       </div>
     </div>
     <div class="section">
@@ -212,7 +213,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-wplyw" class="screen">
     <div class="header">
       <div><div class="header-title">💵 Wpływ</div><div class="header-sub" id="date-display-w"></div></div>
-      <div class="user-chip" id="user-chip-i">👨 Mąż</div>
+      <div class="user-chip" id="user-chip-i">👨 Bartek</div>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -221,6 +222,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria-w"><option value="">Wybierz...</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Inne</option></select></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-w" placeholder="np. Wynagrodzenie..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wplyw"></div></div>
+        <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Czyj wpływ</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('Mąż')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('Żona')">Weronika</button></div></div></div>
       </div>
     </div>
     <div class="section">
@@ -244,8 +246,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <button class="type-btn" id="type-wplywy" onclick="setHistType('wplywy',this)">💵 Wpływy</button>
     </div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Mąż</div><div class="stat-value stat-maz" id="stat-maz">—</div></div>
-      <div class="stat-card"><div class="stat-label">Żona</div><div class="stat-value stat-zona" id="stat-zona">—</div></div>
+      <div class="stat-card"><div class="stat-label">Bartek</div><div class="stat-value stat-maz" id="stat-maz">—</div></div>
+      <div class="stat-card"><div class="stat-label">Weronika</div><div class="stat-value stat-zona" id="stat-zona">—</div></div>
       <div class="stat-card"><div class="stat-label">Razem</div><div class="stat-value stat-total" id="stat-total">—</div></div>
       <div class="stat-card"><div class="stat-label">Wpisów</div><div class="stat-value stat-cnt" id="stat-count">—</div></div>
     </div>
@@ -262,14 +264,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <button class="refresh-btn" onclick="loadBudzet()">↻</button>
     </div>
     <div class="zona-card">
-      <div class="zona-card-title">👩 Budżet żony</div>
+      <div class="zona-card-title">👩 Budżet Weroniki</div>
       <div class="zona-row"><span class="zona-label">Przelew miesięczny</span><span class="zona-val" id="z-przelew">—</span></div>
       <div class="zona-row"><span class="zona-label">Wydała dotychczas</span><span class="zona-val" id="z-wydala">—</span></div>
       <div class="zona-row"><span class="zona-label">Pozostało</span><span class="zona-val" id="z-pozostalo">—</span></div>
       <div class="zona-bar-wrap"><div class="zona-bar" id="z-bar" style="width:0%"></div></div>
     </div>
     <div class="section">
-      <div class="section-label">Kategorie — Mąż</div>
+      <div class="section-label">Kategorie — Bartek</div>
       <div class="card" id="budzet-list"><div class="budget-loading">Ładowanie...</div></div>
     </div>
   </div>
@@ -302,9 +304,23 @@ const MP  = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","S
 
 // ── STATE ──
 let savedPin   = localStorage.getItem("bdpin")  || "";
-let currentUser= localStorage.getItem("bduser") || ""; // "Mąż" lub "Żona"
+let currentUser= localStorage.getItem("bduser") || ""; // "Mąż" lub "Żona" — zalogowana osoba
+let currentKto = ""; // "Mąż" lub "Żona" — kto płaci w formularzu
 let pinBuffer  = "";
 let pendingDel = null;
+
+function displayName(osoba) {
+  return osoba === "Mąż" ? "Bartek" : osoba === "Żona" ? "Weronika" : osoba;
+}
+
+function setOwner(osoba) {
+  currentKto = osoba;
+  const isMaz = osoba === "Mąż";
+  document.querySelectorAll(".own-bartek").forEach(b => b.classList.toggle("active", isMaz));
+  document.querySelectorAll(".own-weronika").forEach(b => b.classList.toggle("active", !isMaz));
+  document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
+  document.getElementById("btn-wplyw").classList.toggle("wife", !isMaz);
+}
 let histType   = "wydatki";
 let histYear   = new Date().getFullYear();
 let histMonth  = new Date().getMonth();
@@ -358,7 +374,7 @@ function pinSuccess(osoba) {
   const isMaz = osoba === "Mąż";
   // Pokaż badge
   const badge = document.getElementById("pin-badge");
-  badge.textContent = isMaz ? "👨 Mąż" : "👩 Żona";
+  badge.textContent = isMaz ? "👨 Bartek" : "👩 Weronika";
   badge.className   = "pin-user-badge " + (isMaz ? "show-maz" : "show-zona");
   updateDots(isMaz ? "filled" : "filled-zona");
   // Zmień na kolor użytkownika
@@ -380,7 +396,12 @@ function pinFail(msg) {
 function clearSession() {
   localStorage.removeItem("bdpin");
   localStorage.removeItem("bduser");
-  savedPin = ""; currentUser = "";
+  savedPin = ""; currentUser = ""; currentKto = "";
+  pinBuffer = ""; updateDots();
+  document.getElementById("pin-screen").style.display = "";
+  document.getElementById("app").classList.remove("visible");
+  document.getElementById("bottom-nav").style.display = "none";
+  document.getElementById("pin-error").textContent = "";
   showToast("Wylogowano","ok");
 }
 
@@ -396,17 +417,16 @@ function initApp(osoba) {
   document.getElementById("date-display").textContent   = ds;
   document.getElementById("date-display-w").textContent = ds;
 
-  // Chip z nazwą użytkownika
-  const chipLabel = isMaz ? "👨 Mąż" : "👩 Żona";
+  // Chip z nazwą zalogowanej osoby
+  const chipLabel = isMaz ? "👨 Bartek" : "👩 Weronika";
   const chipCls   = isMaz ? "chip-maz" : "chip-zona";
   document.getElementById("user-chip-w").textContent = chipLabel;
   document.getElementById("user-chip-w").className   = "user-chip " + chipCls;
   document.getElementById("user-chip-i").textContent = chipLabel;
   document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
 
-  // Kolor przycisku submit
-  document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
-  document.getElementById("btn-wplyw").classList.toggle("wife",   !isMaz);
+  // Domyślnie kto płaci = zalogowana osoba
+  setOwner(osoba);
 
   updateHistMonthLabel();
   loadAllData();
@@ -438,7 +458,7 @@ async function submitWydatek() {
   if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
   const btn=document.getElementById("btn-wydatek"); btn.classList.add("loading");
   try {
-    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:kat,opis:opis||kat,data,kto:currentUser})});
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:kat,opis:opis||kat,data,kto:currentKto})});
     const j=await r.json();
     if(j.status==="ok"){
       showToast("✓ Zapisano!","ok");
@@ -461,7 +481,7 @@ async function submitWplyw() {
   if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
   const btn=document.getElementById("btn-wplyw"); btn.classList.add("loading");
   try {
-    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:kat,opis:opis||kat,data,kto:currentUser})});
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:kat,opis:opis||kat,data,kto:currentKto})});
     const j=await r.json();
     if(j.status==="ok"){
       showToast("✓ Zapisano!","ok");
@@ -529,7 +549,7 @@ function renderHistory() {
       <div class="history-dot ${im?'dot-maz':'dot-zona'}"></div>
       <div class="history-body">
         <div class="history-desc">${i.opis||i.kategoria}</div>
-        <div class="history-meta">${i.data} · ${i.kategoria} · ${i.kto}</div>
+        <div class="history-meta">${i.data} · ${i.kategoria} · ${displayName(i.kto)}</div>
       </div>
       <div class="history-amount ${isInc?'amt-inc':im?'amt-maz':'amt-zona'}">${fmt(i.kwota)}</div>
       <button class="btn-del" onclick="askDel(${i.sheetRow},'${desc}','${isInc?'usunWplyw':'usunWydatek'}')">✕</button>
@@ -565,7 +585,7 @@ async function loadBudzet(){
       const pct=k.budzet>0?Math.min(k.maz/k.budzet*100,100):0;
       const bc=pct>=100?"bar-over":pct>=80?"bar-warn":"bar-ok";
       const sc=pct>=100?"var(--red)":pct>=80?"var(--amber)":"var(--text)";
-      const persons=k.maz>0||k.zona>0?`👨 ${fmt(k.maz)}  👩 ${fmt(k.zona)}`:"brak wydatków";
+      const persons=k.maz>0||k.zona>0?`👨 Bartek: ${fmt(k.maz)}  👩 Weronika: ${fmt(k.zona)}`:"brak wydatków";
       return`<div class="budget-row"><div class="budget-row-left"><div class="budget-row-name">${k.nazwa}</div><div class="budget-bar-wrap"><div class="budget-bar ${bc}" style="width:${pct}%"></div></div><div class="budget-persons">${persons}</div></div><div class="budget-row-right"><div class="budget-spent" style="color:${sc}">${fmt(k.razem)}</div><div class="budget-limit">z ${fmt(k.budzet)}</div></div></div>`;
     }).join("");
   }catch{document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ Błąd połączenia</div>'}
