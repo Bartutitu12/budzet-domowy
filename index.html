@@ -236,10 +236,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div><div class="header-title">📋 Historia</div></div>
       <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadAllData()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
     </div>
-    <div class="month-picker">
-      <button class="mpick-btn" onclick="changeMonth(-1)">‹</button>
-      <div class="mpick-label" id="hist-month-label"></div>
-      <button class="mpick-btn" onclick="changeMonth(1)">›</button>
+    <div style="padding:0 20px 12px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Od</span>
+        <button class="mpick-btn" onclick="changeHistRange('od',-1)">‹</button>
+        <div class="mpick-label" id="hist-od-label" style="flex:1;text-align:center"></div>
+        <button class="mpick-btn" onclick="changeHistRange('od',1)">›</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Do</span>
+        <button class="mpick-btn" onclick="changeHistRange('do',-1)">‹</button>
+        <div class="mpick-label" id="hist-do-label" style="flex:1;text-align:center"></div>
+        <button class="mpick-btn" onclick="changeHistRange('do',1)">›</button>
+      </div>
     </div>
     <div class="type-toggle">
       <button class="type-btn active" id="type-wydatki" onclick="setHistType('wydatki',this)">💸 Wydatki</button>
@@ -277,15 +286,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="mpick-btn" onclick="changeBudzetRange('do',1)">›</button>
       </div>
     </div>
-    <div class="zona-card">
-      <div class="zona-card-title">👩 Budżet Weroniki</div>
-      <div class="zona-row"><span class="zona-label">Przelew miesięczny</span><span class="zona-val" id="z-przelew">—</span></div>
-      <div class="zona-row"><span class="zona-label">Wydała dotychczas</span><span class="zona-val" id="z-wydala">—</span></div>
-      <div class="zona-row"><span class="zona-label">Pozostało</span><span class="zona-val" id="z-pozostalo">—</span></div>
-      <div class="zona-bar-wrap"><div class="zona-bar" id="z-bar" style="width:0%"></div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">👨 Bartek</div><div class="stat-value stat-maz" id="bud-bartek-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">👩 Weronika</div><div class="stat-value stat-zona" id="bud-weronika-total">—</div></div>
+      <div class="stat-card" style="grid-column:span 2"><div class="stat-label">Razem wydane</div><div class="stat-value stat-total" id="bud-razem-total">—</div></div>
     </div>
     <div class="section">
-      <div class="section-label">Kategorie — Bartek</div>
+      <div class="section-label">Wydatki per kategoria</div>
       <div class="card" id="budzet-list"><div class="budget-loading">Ładowanie...</div></div>
     </div>
   </div>
@@ -336,11 +343,13 @@ function setOwner(kto) {
   document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
   document.getElementById("btn-wplyw").classList.toggle("wife", !isMaz);
 }
-let histType   = "wydatki";
-let histYear   = new Date().getFullYear();
-let histMonth  = new Date().getMonth();
-let allWydatki = [];
-let allWplywy  = [];
+let histType    = "wydatki";
+let histYearOd  = new Date().getFullYear();
+let histMonthOd = new Date().getMonth();
+let histYearDo  = new Date().getFullYear();
+let histMonthDo = new Date().getMonth();
+let allWydatki  = [];
+let allWplywy   = [];
 let budzetYearOd  = new Date().getFullYear();
 let budzetMonthOd = new Date().getMonth();
 let budzetYearDo  = new Date().getFullYear();
@@ -447,7 +456,7 @@ function initApp(osoba) {
   // Domyślnie kto płaci = zalogowana osoba
   setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
 
-  updateHistMonthLabel();
+  updateHistRangeLabel();
   updateBudzetMonthLabel();
   loadAllData();
 
@@ -531,14 +540,21 @@ async function loadAllData() {
 }
 
 // ── HISTORY ──
-function updateHistMonthLabel() {
-  document.getElementById("hist-month-label").textContent = MP[histMonth]+" "+histYear;
+function updateHistRangeLabel() {
+  document.getElementById("hist-od-label").textContent = MP[histMonthOd]+" "+histYearOd;
+  document.getElementById("hist-do-label").textContent = MP[histMonthDo]+" "+histYearDo;
 }
-function changeMonth(dir) {
-  histMonth+=dir;
-  if(histMonth>11){histMonth=0;histYear++}
-  if(histMonth<0){histMonth=11;histYear--}
-  updateHistMonthLabel(); renderHistory();
+function changeHistRange(which, dir) {
+  if(which==='od'){
+    histMonthOd+=dir;
+    if(histMonthOd>11){histMonthOd=0;histYearOd++}
+    if(histMonthOd<0){histMonthOd=11;histYearOd--}
+  } else {
+    histMonthDo+=dir;
+    if(histMonthDo>11){histMonthDo=0;histYearDo++}
+    if(histMonthDo<0){histMonthDo=11;histYearDo--}
+  }
+  updateHistRangeLabel(); renderHistory();
 }
 function setHistType(type,el) {
   histType=type;
@@ -548,9 +564,13 @@ function setHistType(type,el) {
   renderHistory();
 }
 function renderHistory() {
-  const cm=MP[histMonth], cy=histYear;
   const data=histType==="wydatki"?allWydatki:allWplywy;
-  const filtered=data.filter(i=>i.miesiac===cm&&i.rok==cy);
+  const filtered=data.filter(i=>{
+    const idx=MP.indexOf(i.miesiac), rok=parseInt(i.rok);
+    const odOk=rok>histYearOd||(rok===histYearOd&&idx>=histMonthOd);
+    const doOk=rok<histYearDo||(rok===histYearDo&&idx<=histMonthDo);
+    return odOk&&doOk;
+  });
   let ms=0,zs=0;
   filtered.forEach(i=>{
     if(i.kto==="Mąż")  ms+=parseFloat(i.kwota)||0;
@@ -561,7 +581,7 @@ function renderHistory() {
   document.getElementById("stat-total").textContent=fmt(ms+zs);
   document.getElementById("stat-count").textContent=filtered.length;
   const list=document.getElementById("history-list");
-  if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów za '+cm+" "+cy+"</div>";return}
+  if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów w wybranym zakresie</div>';return}
   const isInc=histType==="wplywy";
   list.innerHTML=filtered.map(i=>{
     const im=i.kto==="Mąż";
@@ -614,19 +634,27 @@ async function loadBudzet(){
       +"&miesiacDo="+encodeURIComponent(MP[budzetMonthDo])+"&rokDo="+budzetYearDo;
     const r=await fetch(API+"?"+params);const j=await r.json();
     if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
-    const p=j.przelew||0,zw=j.zonaWydala||0,zpct=p>0?Math.min(zw/p*100,100):0;
-    document.getElementById("z-przelew").textContent=fmt(p);
-    document.getElementById("z-wydala").textContent=fmt(zw);
-    document.getElementById("z-pozostalo").textContent=fmt(p-zw);
-    document.getElementById("z-bar").style.width=zpct+"%";
-    const rows=(j.kategorie||[]).filter(k=>k.budzet>0||k.razem>0);
-    if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak danych</div>';return}
+    const kat=j.kategorie||[];
+    const totalMaz  = kat.reduce((s,k)=>s+(k.maz||0),0);
+    const totalZona = kat.reduce((s,k)=>s+(k.zona||0),0);
+    document.getElementById("bud-bartek-total").textContent  = fmt(totalMaz);
+    document.getElementById("bud-weronika-total").textContent= fmt(totalZona);
+    document.getElementById("bud-razem-total").textContent   = fmt(totalMaz+totalZona);
+    const rows=kat.filter(k=>k.razem>0);
+    if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak wydatków w tym zakresie</div>';return}
     document.getElementById("budzet-list").innerHTML=rows.map(k=>{
-      const pct=k.budzet>0?Math.min(k.maz/k.budzet*100,100):0;
-      const bc=pct>=100?"bar-over":pct>=80?"bar-warn":"bar-ok";
-      const sc=pct>=100?"var(--red)":pct>=80?"var(--amber)":"var(--text)";
-      const persons=k.maz>0||k.zona>0?`👨 Bartek: ${fmt(k.maz)}  👩 Weronika: ${fmt(k.zona)}`:"brak wydatków";
-      return`<div class="budget-row"><div class="budget-row-left"><div class="budget-row-name">${k.nazwa}</div><div class="budget-bar-wrap"><div class="budget-bar ${bc}" style="width:${pct}%"></div></div><div class="budget-persons">${persons}</div></div><div class="budget-row-right"><div class="budget-spent" style="color:${sc}">${fmt(k.razem)}</div><div class="budget-limit">z ${fmt(k.budzet)}</div></div></div>`;
+      return`<div class="budget-row">
+        <div class="budget-row-left">
+          <div class="budget-row-name">${k.nazwa}</div>
+          <div class="budget-persons">
+            <span style="color:var(--man)">👨 ${fmt(k.maz)}</span>&nbsp;&nbsp;
+            <span style="color:var(--wife)">👩 ${fmt(k.zona)}</span>
+          </div>
+        </div>
+        <div class="budget-row-right">
+          <div class="budget-spent">${fmt(k.razem)}</div>
+        </div>
+      </div>`;
     }).join("");
   }catch{document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ Błąd połączenia</div>'}
 }
