@@ -260,8 +260,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- BUDŻET -->
   <div id="screen-budzet" class="screen">
     <div class="header">
-      <div><div class="header-title">🎯 Budżet</div><div class="header-sub" id="budget-month"></div></div>
+      <div><div class="header-title">🎯 Budżet</div></div>
       <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudzet()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
+    </div>
+    <div class="month-picker">
+      <button class="mpick-btn" onclick="changeBudzetMonth(-1)">‹</button>
+      <div class="mpick-label" id="budzet-month-label"></div>
+      <button class="mpick-btn" onclick="changeBudzetMonth(1)">›</button>
     </div>
     <div class="zona-card">
       <div class="zona-card-title">👩 Budżet Weroniki</div>
@@ -327,6 +332,8 @@ let histYear   = new Date().getFullYear();
 let histMonth  = new Date().getMonth();
 let allWydatki = [];
 let allWplywy  = [];
+let budzetYear  = new Date().getFullYear();
+let budzetMonth = new Date().getMonth();
 
 // ── PIN ──
 function pinKey(d) {
@@ -430,6 +437,7 @@ function initApp(osoba) {
   setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
 
   updateHistMonthLabel();
+  updateBudzetMonthLabel();
   loadAllData();
 }
 
@@ -569,12 +577,22 @@ async function confirmDel(){
 }
 
 // ── BUDŻET ──
+function updateBudzetMonthLabel() {
+  document.getElementById("budzet-month-label").textContent = MP[budzetMonth]+" "+budzetYear;
+}
+function changeBudzetMonth(dir) {
+  budzetMonth += dir;
+  if(budzetMonth > 11){budzetMonth = 0; budzetYear++;}
+  if(budzetMonth < 0){budzetMonth = 11; budzetYear--;}
+  updateBudzetMonthLabel();
+  loadBudzet();
+}
 async function loadBudzet(){
   document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
   try{
-    const r=await fetch(API+"?action=pobierzBudzet&pin="+savedPin);const j=await r.json();
+    const miesiacNazwa = encodeURIComponent(MP[budzetMonth]);
+    const r=await fetch(API+"?action=pobierzBudzet&pin="+savedPin+"&miesiac="+miesiacNazwa+"&rok="+budzetYear);const j=await r.json();
     if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
-    document.getElementById("budget-month").textContent=j.miesiac||"";
     const p=j.przelew||0,zw=j.zonaWydala||0,zpct=p>0?Math.min(zw/p*100,100):0;
     document.getElementById("z-przelew").textContent=fmt(p);
     document.getElementById("z-wydala").textContent=fmt(zw);
