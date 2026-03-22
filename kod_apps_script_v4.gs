@@ -145,45 +145,62 @@ function pobierzBudzet(e) {
     kolejnosc.push(row[0]);
   }
 
-  // Stały przelew dla Weroniki (z B7)
-  const przelew = parseFloat(budzetSheet.getRange("B7").getValue()) || 0;
+  // Wpływy per osoba (dla budżetu per osoba)
+  const wplywSheet = ss.getSheetByName(WPLYWY_SHEET);
+  const wplywLast  = wplywSheet ? wplywSheet.getLastRow() : 0;
+  const wplywyRows = wplywLast >= 3 ? wplywSheet.getRange(3, 1, wplywLast - 2, 8).getValues() : [];
+  let mazWplywy = 0, zonaWplywy = 0;
+  for (const row of wplywyRows) {
+    if (!row[0]) continue;
+    const ri = MIESIACE.indexOf(row[5]), rr = parseInt(row[6]);
+    const odOk = rr > rokOd || (rr === rokOd && ri >= idxOd);
+    const doOk = rr < rokDo || (rr === rokDo && ri <= idxDo);
+    if (!odOk || !doOk) continue;
+    const kwota = parseFloat(row[4]) || 0;
+    if (row[3] === "Mąż")  mazWplywy  += kwota;
+    if (row[3] === "Żona") zonaWplywy += kwota;
+  }
 
-  // Rzeczywiste wydatki z zakładki Wydatki
+  // Wydatki z zakładki Wydatki
   const lastRow = wydatkiSheet.getLastRow();
   const wiersze = lastRow >= 3 ? wydatkiSheet.getRange(3, 1, lastRow - 2, 8).getValues() : [];
 
   const mazWyd  = {};
   const zonaWyd = {};
+  let mazWydTotal = 0, zonaWydTotal = 0;
   for (const row of wiersze) {
     if (!row[0]) continue;
     const rowMiesiacIdx = MIESIACE.indexOf(row[5]);
     const rowRok        = parseInt(row[6]);
-    // Sprawdź czy wiersz mieści się w zakresie
     const odOk = rowRok > rokOd || (rowRok === rokOd && rowMiesiacIdx >= idxOd);
     const doOk = rowRok < rokDo || (rowRok === rokDo && rowMiesiacIdx <= idxDo);
     if (!odOk || !doOk) continue;
     const kat   = row[2];
     const kto   = row[3];
     const kwota = parseFloat(row[4]) || 0;
+    if (kto === "Mąż")  mazWydTotal  += kwota;
+    if (kto === "Żona") zonaWydTotal += kwota;
+    if (kat === "Przelew wewnętrzny") continue; // nie w kategorii, ale w totalu
     if (kto === "Mąż")  mazWyd[kat]  = (mazWyd[kat]  || 0) + kwota;
     if (kto === "Żona") zonaWyd[kat] = (zonaWyd[kat] || 0) + kwota;
   }
 
-  // Buduj listę kategorii
+  // Buduj listę kategorii (wszystkie kategorie z wydatków, bez przelewów)
+  const katSet = new Set([...Object.keys(mazWyd), ...Object.keys(zonaWyd)]);
+  const kolejnoscFull = [...kolejnosc, ...[...katSet].filter(k => !kolejnosc.includes(k))];
   const kategorie = [];
-  for (const nazwa of kolejnosc) {
-    const budzet    = plany[nazwa];
-    const maz       = mazWyd[nazwa]  || 0;
-    const zona      = zonaWyd[nazwa] || 0;
-    const razem     = maz + zona;
-    const pozostalo = budzet - razem;
-    if (budzet > 0 || razem > 0) {
-      kategorie.push({ nazwa, budzet, maz, zona, razem, pozostalo });
-    }
+  for (const nazwa of kolejnoscFull) {
+    const maz   = mazWyd[nazwa]  || 0;
+    const zona  = zonaWyd[nazwa] || 0;
+    const razem = maz + zona;
+    if (razem === 0) continue;
+    kategorie.push({ nazwa, maz, zona, razem });
   }
 
-  const zonaWydala = Object.values(zonaWyd).reduce((s, v) => s + v, 0);
-  return respond({ status: "ok", miesiacOd, rokOd, miesiacDo, rokDo, przelew, zonaWydala, kategorie });
+  return respond({
+    status: "ok", miesiacOd, rokOd, miesiacDo, rokDo,
+    mazWplywy, zonaWplywy, mazWydTotal, zonaWydTotal, kategorie
+  });
 }
 
 function formatMiesiac(date) {

@@ -219,7 +219,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="section-label">Szczegóły</div>
       <div class="card">
         <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="kwota-w" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
-        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria-w"><option value="">Wybierz...</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Inne</option></select></div></div>
+        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Kategoria</div><select id="kategoria-w"><option value="">Wybierz...</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Pizzaparty</option><option>Makijaż</option><option>Włosy</option><option>Inne</option></select></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-w" placeholder="np. Wynagrodzenie..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-wplyw"></div></div>
         <div class="field"><div class="field-icon">👤</div><div class="field-body"><div class="field-label">Czyj wpływ</div><div class="owner-toggle"><button class="owner-btn maz own-bartek" onclick="setOwner('bartek')">Bartek</button><button class="owner-btn zona own-weronika" onclick="setOwner('weronika')">Weronika</button></div></div></div>
@@ -287,13 +287,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">👨 Bartek</div><div class="stat-value stat-maz" id="bud-bartek-total">—</div></div>
-      <div class="stat-card"><div class="stat-label">👩 Weronika</div><div class="stat-value stat-zona" id="bud-weronika-total">—</div></div>
-      <div class="stat-card" style="grid-column:span 2"><div class="stat-label">Razem wydane</div><div class="stat-value stat-total" id="bud-razem-total">—</div></div>
+      <div class="stat-card">
+        <div class="stat-label">👨 Bartek — zostało</div>
+        <div class="stat-value stat-maz" id="bud-b-zostalo">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Wpływy: <span id="bud-b-wplywy">—</span></div>
+        <div style="font-size:11px;color:var(--muted)">Wydatki: <span id="bud-b-wydatki">—</span></div>
+        <div style="height:4px;background:rgba(77,166,255,0.15);border-radius:2px;margin-top:8px;overflow:hidden"><div id="bud-b-bar" style="height:100%;background:var(--man);border-radius:2px;width:0%;transition:width .6s"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">👩 Weronika — zostało</div>
+        <div class="stat-value stat-zona" id="bud-w-zostalo">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Wpływy: <span id="bud-w-wplywy">—</span></div>
+        <div style="font-size:11px;color:var(--muted)">Wydatki: <span id="bud-w-wydatki">—</span></div>
+        <div style="height:4px;background:rgba(192,132,252,0.15);border-radius:2px;margin-top:8px;overflow:hidden"><div id="bud-w-bar" style="height:100%;background:var(--wife);border-radius:2px;width:0%;transition:width .6s"></div></div>
+      </div>
     </div>
     <div class="section">
       <div class="section-label">Wydatki per kategoria</div>
       <div class="card" id="budzet-list"><div class="budget-loading">Ładowanie...</div></div>
+    </div>
+  </div>
+
+  <!-- PRZELEW -->
+  <div id="screen-przelew" class="screen">
+    <div class="header">
+      <div><div class="header-title">🔄 Przelew</div><div class="header-sub" id="date-display-p"></div></div>
+      <button class="user-chip" id="user-chip-p" onclick="clearSession()">👨 Bartek</button>
+    </div>
+    <div class="section">
+      <div class="section-label">Przelew wewnętrzny</div>
+      <div class="card">
+        <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="kwota-p" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
+        <div class="field"><div class="field-icon">🔄</div><div class="field-body"><div class="field-label">Kierunek</div><div class="owner-toggle"><button class="owner-btn maz" id="pdir-bw" onclick="setPrzelewDir('bw')">Bartek → Weronika</button><button class="owner-btn zona" id="pdir-wb" onclick="setPrzelewDir('wb')">Weronika → Bartek</button></div></div></div>
+        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-p" placeholder="np. Na zakupy..."></div></div>
+        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-przelew"></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <button class="btn-submit" id="btn-przelew" onclick="submitPrzelew()"><span class="btn-text">🔄 Wykonaj przelew</span><div class="spinner"></div></button>
     </div>
   </div>
 
@@ -302,6 +333,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <button class="nav-btn active" id="nav-wydatek"  onclick="switchScreen('wydatek')"><span class="nav-icon">💸</span>Wydatek</button>
   <button class="nav-btn"        id="nav-wplyw"    onclick="switchScreen('wplyw')"><span class="nav-icon">💵</span>Wpływ</button>
+  <button class="nav-btn"        id="nav-przelew"  onclick="switchScreen('przelew')"><span class="nav-icon">🔄</span>Przelew</button>
   <button class="nav-btn"        id="nav-historia" onclick="switchScreen('historia')"><span class="nav-icon">📋</span>Historia</button>
   <button class="nav-btn"        id="nav-budzet"   onclick="switchScreen('budzet')"><span class="nav-icon">🎯</span>Budżet</button>
 </nav>
@@ -354,6 +386,38 @@ let budzetYearOd  = new Date().getFullYear();
 let budzetMonthOd = new Date().getMonth();
 let budzetYearDo  = new Date().getFullYear();
 let budzetMonthDo = new Date().getMonth();
+let przelewDir    = 'bw'; // 'bw' = Bartek→Weronika, 'wb' = Weronika→Bartek
+
+function setPrzelewDir(dir) {
+  przelewDir = dir;
+  document.getElementById("pdir-bw").classList.toggle("active", dir === 'bw');
+  document.getElementById("pdir-wb").classList.toggle("active", dir === 'wb');
+}
+
+async function submitPrzelew() {
+  const kwota = document.getElementById("kwota-p").value;
+  const opis  = document.getElementById("opis-p").value || "Przelew wewnętrzny";
+  const data  = document.getElementById("data-przelew").value;
+  if(!kwota || parseFloat(kwota) <= 0) { showToast("⚠️ Podaj kwotę","fail"); return; }
+  const nadawca = przelewDir === 'bw' ? "Mąż" : "Żona";
+  const biorca  = przelewDir === 'bw' ? "Żona" : "Mąż";
+  const btn = document.getElementById("btn-przelew"); btn.classList.add("loading");
+  try {
+    const [r1,r2] = await Promise.all([
+      fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:nadawca})}),
+      fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:biorca})})
+    ]);
+    const [j1,j2] = await Promise.all([r1.json(),r2.json()]);
+    if(j1.status==="ok"&&j2.status==="ok"){
+      showToast("✓ Przelew wykonany!","ok");
+      document.getElementById("kwota-p").value="";
+      document.getElementById("opis-p").value="";
+      document.getElementById("data-przelew").value=todayStr();
+      loadAllData();
+    } else showToast("❌ Błąd przelewu","fail");
+  } catch { showToast("❌ Brak połączenia","fail"); }
+  btn.classList.remove("loading");
+}
 
 // ── PIN ──
 function pinKey(d) {
@@ -444,6 +508,8 @@ function initApp(osoba) {
   const ds = n.toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"});
   document.getElementById("date-display").textContent   = ds;
   document.getElementById("date-display-w").textContent = ds;
+  document.getElementById("date-display-p").textContent = ds;
+  document.getElementById("data-przelew").value = t;
 
   // Chip z nazwą zalogowanej osoby
   const chipLabel = isMaz ? "👨 Bartek" : "👩 Weronika";
@@ -452,6 +518,10 @@ function initApp(osoba) {
   document.getElementById("user-chip-w").className   = "user-chip " + chipCls;
   document.getElementById("user-chip-i").textContent = chipLabel;
   document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
+  document.getElementById("user-chip-p").textContent = chipLabel;
+  document.getElementById("user-chip-p").className   = "user-chip " + chipCls;
+  // Domyślny kierunek przelewu: zalogowany → druga osoba
+  setPrzelewDir(isMaz ? 'bw' : 'wb');
 
   // Domyślnie kto płaci = zalogowana osoba
   setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
@@ -634,13 +704,17 @@ async function loadBudzet(){
       +"&miesiacDo="+encodeURIComponent(MP[budzetMonthDo])+"&rokDo="+budzetYearDo;
     const r=await fetch(API+"?"+params);const j=await r.json();
     if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
-    const kat=j.kategorie||[];
-    const totalMaz  = kat.reduce((s,k)=>s+(k.maz||0),0);
-    const totalZona = kat.reduce((s,k)=>s+(k.zona||0),0);
-    document.getElementById("bud-bartek-total").textContent  = fmt(totalMaz);
-    document.getElementById("bud-weronika-total").textContent= fmt(totalZona);
-    document.getElementById("bud-razem-total").textContent   = fmt(totalMaz+totalZona);
-    const rows=kat.filter(k=>k.razem>0);
+    const bW=j.mazWplywy||0, bY=j.mazWydTotal||0, bZ=bW-bY;
+    const wW=j.zonaWplywy||0, wY=j.zonaWydTotal||0, wZ=wW-wY;
+    document.getElementById("bud-b-wplywy").textContent  = fmt(bW);
+    document.getElementById("bud-b-wydatki").textContent = fmt(bY);
+    document.getElementById("bud-b-zostalo").textContent = fmt(bZ);
+    document.getElementById("bud-b-bar").style.width = bW>0?Math.min(bY/bW*100,100)+"%" : "0%";
+    document.getElementById("bud-w-wplywy").textContent  = fmt(wW);
+    document.getElementById("bud-w-wydatki").textContent = fmt(wY);
+    document.getElementById("bud-w-zostalo").textContent = fmt(wZ);
+    document.getElementById("bud-w-bar").style.width = wW>0?Math.min(wY/wW*100,100)+"%" : "0%";
+    const rows=(j.kategorie||[]).filter(k=>k.razem>0);
     if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak wydatków w tym zakresie</div>';return}
     document.getElementById("budzet-list").innerHTML=rows.map(k=>{
       return`<div class="budget-row">
