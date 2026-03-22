@@ -638,15 +638,14 @@ function renderHistory() {
   });
   let ms=0,zs=0;
   filtered.forEach(i=>{
-    if(i.kategoria==="Przelew wewnętrzny") return; // nie liczymy w statystykach
+    if(i.kategoria==="Przelew wewnętrzny" && i.kto==="Mąż") return; // przelew nie liczy się u nadawcy
     if(i.kto==="Mąż")  ms+=parseFloat(i.kwota)||0;
     if(i.kto==="Żona") zs+=parseFloat(i.kwota)||0;
   });
-  const countBezPrzelewu=filtered.filter(i=>i.kategoria!=="Przelew wewnętrzny").length;
   document.getElementById("stat-maz").textContent  =fmt(ms);
   document.getElementById("stat-zona").textContent =fmt(zs);
   document.getElementById("stat-total").textContent=fmt(ms+zs);
-  document.getElementById("stat-count").textContent=countBezPrzelewu;
+  document.getElementById("stat-count").textContent=filtered.length;
   const list=document.getElementById("history-list");
   if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów w wybranym zakresie</div>';return}
   const isInc=histType==="wplywy";
