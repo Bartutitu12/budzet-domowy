@@ -315,10 +315,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <button class="user-chip" id="user-chip-p" onclick="clearSession()">👨 Bartek</button>
     </div>
     <div class="section">
-      <div class="section-label">Przelew wewnętrzny</div>
+      <div class="section-label" id="przelew-label">Przelew wewnętrzny</div>
       <div class="card">
         <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="kwota-p" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
-        <div class="field"><div class="field-icon">🔄</div><div class="field-body"><div class="field-label">Kierunek</div><div class="owner-toggle"><button class="owner-btn maz" id="pdir-bw" onclick="setPrzelewDir('bw')">Bartek → Weronika</button><button class="owner-btn zona" id="pdir-wb" onclick="setPrzelewDir('wb')">Weronika → Bartek</button></div></div></div>
         <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis (opcjonalnie)</div><input type="text" id="opis-p" placeholder="np. Na zakupy..."></div></div>
         <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="data-przelew"></div></div>
       </div>
@@ -386,21 +385,13 @@ let budzetYearOd  = new Date().getFullYear();
 let budzetMonthOd = new Date().getMonth();
 let budzetYearDo  = new Date().getFullYear();
 let budzetMonthDo = new Date().getMonth();
-let przelewDir    = 'bw'; // 'bw' = Bartek→Weronika, 'wb' = Weronika→Bartek
-
-function setPrzelewDir(dir) {
-  przelewDir = dir;
-  document.getElementById("pdir-bw").classList.toggle("active", dir === 'bw');
-  document.getElementById("pdir-wb").classList.toggle("active", dir === 'wb');
-}
-
 async function submitPrzelew() {
   const kwota = document.getElementById("kwota-p").value;
   const opis  = document.getElementById("opis-p").value || "Przelew wewnętrzny";
   const data  = document.getElementById("data-przelew").value;
   if(!kwota || parseFloat(kwota) <= 0) { showToast("⚠️ Podaj kwotę","fail"); return; }
-  const nadawca = przelewDir === 'bw' ? "Mąż" : "Żona";
-  const biorca  = przelewDir === 'bw' ? "Żona" : "Mąż";
+  const nadawca = currentUser; // zawsze zalogowana osoba
+  const biorca  = currentUser === "Mąż" ? "Żona" : "Mąż";
   const btn = document.getElementById("btn-przelew"); btn.classList.add("loading");
   try {
     // Sekwencyjnie — najpierw wydatek u nadawcy, potem wpływ u odbiorcy
@@ -520,8 +511,10 @@ function initApp(osoba) {
   document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
   document.getElementById("user-chip-p").textContent = chipLabel;
   document.getElementById("user-chip-p").className   = "user-chip " + chipCls;
-  // Domyślny kierunek przelewu: zalogowany → druga osoba
-  setPrzelewDir(isMaz ? 'bw' : 'wb');
+  // Etykieta kierunku przelewu
+  const pOd = isMaz ? "Bartek" : "Weronika";
+  const pDo = isMaz ? "Weronika" : "Bartek";
+  document.getElementById("przelew-label").textContent = pOd + " → " + pDo;
 
   // Domyślnie kto płaci = zalogowana osoba
   setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
