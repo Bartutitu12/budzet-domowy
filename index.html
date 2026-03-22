@@ -263,10 +263,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div><div class="header-title">🎯 Budżet</div></div>
       <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudzet()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
     </div>
-    <div class="month-picker">
-      <button class="mpick-btn" onclick="changeBudzetMonth(-1)">‹</button>
-      <div class="mpick-label" id="budzet-month-label"></div>
-      <button class="mpick-btn" onclick="changeBudzetMonth(1)">›</button>
+    <div style="padding:0 20px 12px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Od</span>
+        <button class="mpick-btn" onclick="changeBudzetRange('od',-1)">‹</button>
+        <div class="mpick-label" id="budzet-od-label" style="flex:1;text-align:center"></div>
+        <button class="mpick-btn" onclick="changeBudzetRange('od',1)">›</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Do</span>
+        <button class="mpick-btn" onclick="changeBudzetRange('do',-1)">‹</button>
+        <div class="mpick-label" id="budzet-do-label" style="flex:1;text-align:center"></div>
+        <button class="mpick-btn" onclick="changeBudzetRange('do',1)">›</button>
+      </div>
     </div>
     <div class="zona-card">
       <div class="zona-card-title">👩 Budżet Weroniki</div>
@@ -332,8 +341,10 @@ let histYear   = new Date().getFullYear();
 let histMonth  = new Date().getMonth();
 let allWydatki = [];
 let allWplywy  = [];
-let budzetYear  = new Date().getFullYear();
-let budzetMonth = new Date().getMonth();
+let budzetYearOd  = new Date().getFullYear();
+let budzetMonthOd = new Date().getMonth();
+let budzetYearDo  = new Date().getFullYear();
+let budzetMonthDo = new Date().getMonth();
 
 // ── PIN ──
 function pinKey(d) {
@@ -439,6 +450,7 @@ function initApp(osoba) {
   updateHistMonthLabel();
   updateBudzetMonthLabel();
   loadAllData();
+
 }
 
 function switchScreen(n) {
@@ -578,20 +590,29 @@ async function confirmDel(){
 
 // ── BUDŻET ──
 function updateBudzetMonthLabel() {
-  document.getElementById("budzet-month-label").textContent = MP[budzetMonth]+" "+budzetYear;
+  document.getElementById("budzet-od-label").textContent = MP[budzetMonthOd]+" "+budzetYearOd;
+  document.getElementById("budzet-do-label").textContent = MP[budzetMonthDo]+" "+budzetYearDo;
 }
-function changeBudzetMonth(dir) {
-  budzetMonth += dir;
-  if(budzetMonth > 11){budzetMonth = 0; budzetYear++;}
-  if(budzetMonth < 0){budzetMonth = 11; budzetYear--;}
+function changeBudzetRange(which, dir) {
+  if (which === 'od') {
+    budzetMonthOd += dir;
+    if(budzetMonthOd > 11){budzetMonthOd = 0; budzetYearOd++;}
+    if(budzetMonthOd < 0){budzetMonthOd = 11; budzetYearOd--;}
+  } else {
+    budzetMonthDo += dir;
+    if(budzetMonthDo > 11){budzetMonthDo = 0; budzetYearDo++;}
+    if(budzetMonthDo < 0){budzetMonthDo = 11; budzetYearDo--;}
+  }
   updateBudzetMonthLabel();
   loadBudzet();
 }
 async function loadBudzet(){
   document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
   try{
-    const miesiacNazwa = encodeURIComponent(MP[budzetMonth]);
-    const r=await fetch(API+"?action=pobierzBudzet&pin="+savedPin+"&miesiac="+miesiacNazwa+"&rok="+budzetYear);const j=await r.json();
+    const params = "action=pobierzBudzet&pin="+savedPin
+      +"&miesiacOd="+encodeURIComponent(MP[budzetMonthOd])+"&rokOd="+budzetYearOd
+      +"&miesiacDo="+encodeURIComponent(MP[budzetMonthDo])+"&rokDo="+budzetYearDo;
+    const r=await fetch(API+"?"+params);const j=await r.json();
     if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
     const p=j.przelew||0,zw=j.zonaWydala||0,zpct=p>0?Math.min(zw/p*100,100):0;
     document.getElementById("z-przelew").textContent=fmt(p);

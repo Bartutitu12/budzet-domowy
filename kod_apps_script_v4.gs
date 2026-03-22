@@ -121,10 +121,19 @@ function pobierzBudzet(e) {
   const wydatkiSheet = ss.getSheetByName(WYDATKI_SHEET);
   if (!budzetSheet || !wydatkiSheet) return respond({ status: "error", message: "Nie znaleziono arkuszy" });
 
-  // Miesiąc i rok — z parametrów URL lub bieżący
-  const teraz   = new Date();
-  const miesiac = (e && e.parameter.miesiac) ? e.parameter.miesiac : formatMiesiac(teraz);
-  const rok     = (e && e.parameter.rok)     ? parseInt(e.parameter.rok) : teraz.getFullYear();
+  const MIESIACE = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+  const teraz    = new Date();
+  const domyslnyMiesiac = formatMiesiac(teraz);
+  const domyslnyRok     = teraz.getFullYear();
+
+  // Zakres Od–Do (lub pojedynczy miesiąc dla wstecznej kompatybilności)
+  const miesiacOd = (e && e.parameter.miesiacOd) || (e && e.parameter.miesiac) || domyslnyMiesiac;
+  const rokOd     = parseInt((e && e.parameter.rokOd)  || (e && e.parameter.rok) || domyslnyRok);
+  const miesiacDo = (e && e.parameter.miesiacDo) || miesiacOd;
+  const rokDo     = parseInt((e && e.parameter.rokDo)  || rokOd);
+
+  const idxOd = MIESIACE.indexOf(miesiacOd);
+  const idxDo = MIESIACE.indexOf(miesiacDo);
 
   // Plany budżetowe z zakładki Budżet (kolumna A = kategoria, kolumna B = limit)
   const budzetRows = budzetSheet.getRange(11, 1, 13, 2).getValues();
@@ -136,7 +145,7 @@ function pobierzBudzet(e) {
     kolejnosc.push(row[0]);
   }
 
-  // Stały przelew dla Weroniki (z B7 — nie zmienia się z miesiącem)
+  // Stały przelew dla Weroniki (z B7)
   const przelew = parseFloat(budzetSheet.getRange("B7").getValue()) || 0;
 
   // Rzeczywiste wydatki z zakładki Wydatki
@@ -147,8 +156,12 @@ function pobierzBudzet(e) {
   const zonaWyd = {};
   for (const row of wiersze) {
     if (!row[0]) continue;
-    if (row[5] !== miesiac) continue;
-    if (parseInt(row[6]) !== rok) continue;
+    const rowMiesiacIdx = MIESIACE.indexOf(row[5]);
+    const rowRok        = parseInt(row[6]);
+    // Sprawdź czy wiersz mieści się w zakresie
+    const odOk = rowRok > rokOd || (rowRok === rokOd && rowMiesiacIdx >= idxOd);
+    const doOk = rowRok < rokDo || (rowRok === rokDo && rowMiesiacIdx <= idxDo);
+    if (!odOk || !doOk) continue;
     const kat   = row[2];
     const kto   = row[3];
     const kwota = parseFloat(row[4]) || 0;
@@ -159,20 +172,18 @@ function pobierzBudzet(e) {
   // Buduj listę kategorii
   const kategorie = [];
   for (const nazwa of kolejnosc) {
-    const budzet   = plany[nazwa];
-    const maz      = mazWyd[nazwa]  || 0;
-    const zona     = zonaWyd[nazwa] || 0;
-    const razem    = maz + zona;
+    const budzet    = plany[nazwa];
+    const maz       = mazWyd[nazwa]  || 0;
+    const zona      = zonaWyd[nazwa] || 0;
+    const razem     = maz + zona;
     const pozostalo = budzet - razem;
     if (budzet > 0 || razem > 0) {
       kategorie.push({ nazwa, budzet, maz, zona, razem, pozostalo });
     }
   }
 
-  // Suma wydatków Weroniki (wszystkie kategorie)
   const zonaWydala = Object.values(zonaWyd).reduce((s, v) => s + v, 0);
-
-  return respond({ status: "ok", miesiac, rok, przelew, zonaWydala, kategorie });
+  return respond({ status: "ok", miesiacOd, rokOd, miesiacDo, rokDo, przelew, zonaWydala, kategorie });
 }
 
 function formatMiesiac(date) {
