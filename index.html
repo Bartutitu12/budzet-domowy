@@ -264,6 +264,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="section-label" id="hist-list-label">Wydatki</div>
       <div class="card" id="history-list"><div class="history-empty">Ładowanie...</div></div>
     </div>
+    <div class="section">
+      <div class="section-label">Per kategoria</div>
+      <div class="card" id="hist-kat-list"></div>
+    </div>
   </div>
 
   <!-- BUDŻET -->
@@ -636,20 +640,19 @@ function renderHistory() {
     const doOk=rok<histYearDo||(rok===histYearDo&&idx<=histMonthDo);
     return odOk&&doOk;
   });
+  const isInc=histType==="wplywy";
   let ms=0,zs=0;
   filtered.forEach(i=>{
-    if(i.kategoria==="Przelew wewnętrzny") return; // nie liczymy w statystykach
+    if(isInc && i.kategoria==="Przelew wewnętrzny") return; // w wpływach przelew nie liczy się w statach
     if(i.kto==="Mąż")  ms+=parseFloat(i.kwota)||0;
     if(i.kto==="Żona") zs+=parseFloat(i.kwota)||0;
   });
-  const countBezPrzelewu=filtered.filter(i=>i.kategoria!=="Przelew wewnętrzny").length;
   document.getElementById("stat-maz").textContent  =fmt(ms);
   document.getElementById("stat-zona").textContent =fmt(zs);
   document.getElementById("stat-total").textContent=fmt(ms+zs);
-  document.getElementById("stat-count").textContent=countBezPrzelewu;
+  document.getElementById("stat-count").textContent=filtered.length;
   const list=document.getElementById("history-list");
   if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów w wybranym zakresie</div>';return}
-  const isInc=histType==="wplywy";
   list.innerHTML=filtered.map(i=>{
     const im=i.kto==="Mąż";
     const desc=(i.opis||i.kategoria).replace(/'/g,"\\'");
@@ -663,6 +666,39 @@ function renderHistory() {
       <button class="btn-del" onclick="askDel(${i.sheetRow},'${desc}','${isInc?'usunWplyw':'usunWydatek'}')">✕</button>
     </div>`;
   }).join("");
+  // Per kategoria
+  const katMap={};
+  filtered.forEach(i=>{
+    if(isInc && i.kategoria==="Przelew wewnętrzny") return;
+    if(!katMap[i.kategoria]) katMap[i.kategoria]={maz:0,zona:0};
+    if(i.kto==="Mąż")  katMap[i.kategoria].maz  +=parseFloat(i.kwota)||0;
+    if(i.kto==="Żona") katMap[i.kategoria].zona +=parseFloat(i.kwota)||0;
+  });
+  const katEl=document.getElementById("hist-kat-list");
+  if(katEl){
+    const kats=Object.entries(katMap).sort((a,b)=>(b[1].maz+b[1].zona)-(a[1].maz+a[1].zona));
+    if(!kats.length){katEl.innerHTML='';return;}
+    katEl.innerHTML=kats.map(([nazwa,v])=>{
+      const razem=v.maz+v.zona;
+      const mazPct=razem>0?Math.round(v.maz/razem*100):0;
+      return`<div class="budget-row">
+        <div class="budget-row-left">
+          <div class="budget-row-name">${nazwa}</div>
+          <div class="budget-bar-wrap" style="margin:5px 0 3px">
+            <div style="height:100%;display:flex;border-radius:2px;overflow:hidden">
+              <div style="width:${mazPct}%;background:var(--man);transition:width .6s"></div>
+              <div style="width:${100-mazPct}%;background:var(--wife);transition:width .6s"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;font-size:11px">
+            <span style="color:var(--man)">👨 ${fmt(v.maz)}</span>
+            <span style="color:var(--wife)">👩 ${fmt(v.zona)}</span>
+          </div>
+        </div>
+        <div class="budget-row-right"><div class="budget-spent">${fmt(razem)}</div></div>
+      </div>`;
+    }).join("");
+  }
 }
 
 // ── DELETE ──
