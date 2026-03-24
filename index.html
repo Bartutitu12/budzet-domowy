@@ -12,23 +12,17 @@
 :root{--bg:#0f0f14;--bg2:#17171f;--bg3:#1e1e28;--border:rgba(255,255,255,0.07);--text:#f0eff5;--muted:#6b6a7a;--man:#4da6ff;--man-bg:rgba(77,166,255,0.12);--wife:#c084fc;--wife-bg:rgba(192,132,252,0.12);--green:#34d399;--amber:#fbbf24;--red:#f87171;--accent:#4da6ff;--radius:16px;--rsm:10px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overscroll-behavior:none}
-
-/* PIN */
 .pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:40px 20px}
 .pin-logo{font-size:48px;margin-bottom:16px}
 .pin-title{font-size:24px;font-weight:600;letter-spacing:-.5px;margin-bottom:6px}
 .pin-sub{font-size:14px;color:var(--muted);margin-bottom:40px;text-align:center}
 .pin-dots{display:flex;gap:16px;margin-bottom:40px}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--muted);transition:all .15s}
-.pin-dot.filled{border-color:var(--accent)}
-.pin-dot.filled-zona{border-color:var(--wife)}
-.pin-dot.filled::after,.pin-dot.filled-zona::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:currentColor}
-.pin-dot.filled::after{background:var(--accent)}
-.pin-dot.filled-zona::after{background:var(--wife)}
-.pin-dot.error{border-color:var(--red)}
-.pin-dot.error::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--red)}
-.pin-dot.success{border-color:var(--green)}
-.pin-dot.success::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--green)}
+.pin-dot.filled{border-color:var(--accent)}.pin-dot.filled-zona{border-color:var(--wife)}
+.pin-dot.filled::after,.pin-dot.filled-zona::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px}
+.pin-dot.filled::after{background:var(--accent)}.pin-dot.filled-zona::after{background:var(--wife)}
+.pin-dot.error{border-color:var(--red)}.pin-dot.error::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--red)}
+.pin-dot.success{border-color:var(--green)}.pin-dot.success::after{content:'';display:block;width:8px;height:8px;border-radius:50%;margin:1px;background:var(--green)}
 .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
 .pin-key{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;font-size:22px;font-weight:500;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;text-align:center;transition:all .1s}
 .pin-key:active{background:var(--bg3);transform:scale(.95)}
@@ -39,19 +33,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pin-user-badge.show-maz{background:var(--man-bg);color:var(--man);opacity:1}
 .pin-user-badge.show-zona{background:var(--wife-bg);color:var(--wife);opacity:1}
 .logout-btn{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 8px;margin-top:20px}
-
-/* APP */
-.app{display:none;padding-bottom:90px}
-.app.visible{display:block}
+.app{display:none;padding-bottom:90px}.app.visible{display:block}
 .header{padding:52px 20px 16px;display:flex;justify-content:space-between;align-items:flex-end}
 .header-title{font-size:26px;font-weight:600;letter-spacing:-.5px}
 .header-sub{font-size:13px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
-
-/* user chip in header */
 .user-chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;border:none;cursor:pointer}
-.chip-maz{background:var(--man-bg);color:var(--man)}
-.chip-zona{background:var(--wife-bg);color:var(--wife)}
-
+.chip-maz{background:var(--man-bg);color:var(--man)}.chip-zona{background:var(--wife-bg);color:var(--wife)}
 .section{padding:0 20px 24px}
 .section-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
@@ -67,14 +54,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .amount-wrapper{display:flex;align-items:center;gap:6px;width:100%}
 .amount-wrapper input{font-size:24px;font-weight:300;letter-spacing:-.5px}
 .amount-unit{font-size:16px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0}
-
-/* owner row — hidden when auto-set */
 .owner-toggle{display:flex;gap:8px;width:100%}
 .owner-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted)}
 .owner-btn.maz.active{background:var(--man-bg);border-color:var(--man);color:var(--man)}
 .owner-btn.zona.active{background:var(--wife-bg);border-color:var(--wife);color:var(--wife)}
-.owner-info{font-size:13px;color:var(--muted);padding:4px 0}
-
 .btn-submit{width:100%;padding:16px;border-radius:var(--radius);border:none;background:var(--accent);color:#000;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-submit:active{transform:scale(.98);opacity:.9}
 .btn-submit.loading{opacity:.6;pointer-events:none}
@@ -82,12 +65,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .spinner{width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:none}
 .loading .spinner{display:block}.loading .btn-text{display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:12px 20px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:100}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--green);color:var(--green)}
 .toast.fail{border-color:var(--red);color:var(--red)}
-
 .history-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px}
 .history-item:last-child{border-bottom:none}
 .history-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -100,7 +81,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .history-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:14px}
 .btn-del{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px 8px;border-radius:6px;flex-shrink:0}
 .btn-del:active{background:rgba(248,113,113,.15);color:var(--red)}
-
 .del-confirm{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
 .del-confirm.show{opacity:1;pointer-events:all}
 .del-sheet{background:var(--bg2);border-radius:24px 24px 0 0;padding:28px 20px 40px;width:100%;border-top:1px solid var(--border)}
@@ -109,20 +89,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .del-actions{display:flex;gap:10px}
 .btn-cancel{flex:1;padding:14px;border-radius:var(--rsm);border:1px solid var(--border);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer}
 .btn-confirm-del{flex:1;padding:14px;border-radius:var(--rsm);border:none;background:var(--red);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
-
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,15,20,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:50}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;transition:color .2s}
 .nav-btn.active{color:var(--accent)}
 .nav-icon{font-size:22px;line-height:1}
 .screen{display:none}.screen.active{display:block}
-
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .stat-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
 .stat-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-.5px}
 .stat-maz{color:var(--man)}.stat-zona{color:var(--wife)}.stat-total{color:var(--text)}.stat-cnt{color:var(--green)}
-
-.month-picker{display:flex;align-items:center;gap:8px;padding:0 20px 16px}
 .mpick-btn{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 16px;color:var(--text);font-size:18px;cursor:pointer}
 .mpick-btn:active{background:var(--bg3)}
 .mpick-label{flex:1;text-align:center;font-size:15px;font-weight:500;font-family:'DM Mono',monospace;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px}
@@ -130,42 +106,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .type-btn{flex:1;padding:9px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;text-align:center}
 .type-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
 .type-btn.active.inc{background:var(--green);border-color:var(--green)}
-
+.type-btn.active.day{background:var(--amber);border-color:var(--amber)}
+.date-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;color-scheme:dark;outline:none;width:100%}
 .refresh-btn{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
-.zona-card{margin:0 20px 16px;background:var(--wife-bg);border:1px solid rgba(192,132,252,.25);border-radius:var(--radius);padding:18px}
-.zona-card-title{font-size:12px;color:var(--wife);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
-.zona-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.zona-label{font-size:13px;color:var(--muted)}
-.zona-val{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--wife)}
-.zona-bar-wrap{height:4px;background:rgba(192,132,252,.2);border-radius:2px;margin-top:10px;overflow:hidden}
-.zona-bar{height:100%;background:var(--wife);border-radius:2px;transition:width .6s ease}
 .budget-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px}
 .budget-row:last-child{border-bottom:none}
 .budget-row-left{flex:1;min-width:0}
 .budget-row-name{font-size:13px;font-weight:500;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .budget-bar-wrap{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:3px}
 .budget-bar{height:100%;border-radius:2px;transition:width .6s ease}
-.bar-ok{background:var(--green)}.bar-warn{background:var(--amber)}.bar-over{background:var(--red)}
 .budget-row-right{text-align:right;flex-shrink:0;min-width:90px}
 .budget-spent{font-size:14px;font-weight:600;font-family:'DM Mono',monospace}
-.budget-limit{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px}
-.budget-persons{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
 .budget-loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen" class="pin-screen">
   <div class="pin-logo">🏠</div>
   <div class="pin-title">Budżet Domowy</div>
   <div class="pin-sub">Wprowadź swój PIN</div>
   <div class="pin-user-badge" id="pin-badge"></div>
   <div class="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
   <div class="pin-keypad">
     <button class="pin-key" onclick="pinKey('1')">1</button>
@@ -185,14 +149,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="logout-btn" onclick="clearSession()">Wyloguj / zmień użytkownika</button>
 </div>
 
-<!-- APP -->
 <div id="app" class="app">
 
   <!-- WYDATEK -->
   <div id="screen-wydatek" class="screen active">
     <div class="header">
       <div><div class="header-title">💸 Wydatek</div><div class="header-sub" id="date-display"></div></div>
-      <button class="user-chip" id="user-chip-w" onclick="clearSession()" title="Wyloguj / zmień PIN">👨 Bartek</button>
+      <button class="user-chip" id="user-chip-w" onclick="clearSession()">👨 Bartek</button>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -213,7 +176,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-wplyw" class="screen">
     <div class="header">
       <div><div class="header-title">💵 Wpływ</div><div class="header-sub" id="date-display-w"></div></div>
-      <button class="user-chip" id="user-chip-i" onclick="clearSession()" title="Wyloguj / zmień PIN">👨 Bartek</button>
+      <button class="user-chip" id="user-chip-i" onclick="clearSession()">👨 Bartek</button>
     </div>
     <div class="section">
       <div class="section-label">Szczegóły</div>
@@ -234,9 +197,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-historia" class="screen">
     <div class="header">
       <div><div class="header-title">📋 Historia</div></div>
-      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadAllData()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadAllData()">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
     </div>
-    <div style="padding:0 20px 12px;display:flex;flex-direction:column;gap:8px">
+
+    <!-- Przełącznik trybu filtra -->
+    <div style="display:flex;gap:6px;padding:0 20px 12px">
+      <button class="type-btn active" id="filter-mies" onclick="setHistFilter('miesiac',this)">📅 Miesiące</button>
+      <button class="type-btn" id="filter-dni" onclick="setHistFilter('dni',this)">🗓️ Dni</button>
+    </div>
+
+    <!-- Filtr miesięczny -->
+    <div id="filter-miesiac-block" style="padding:0 20px 12px;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Od</span>
         <button class="mpick-btn" onclick="changeHistRange('od',-1)">‹</button>
@@ -250,6 +221,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="mpick-btn" onclick="changeHistRange('do',1)">›</button>
       </div>
     </div>
+
+    <!-- Filtr dzienny -->
+    <div id="filter-dni-block" style="padding:0 20px 12px;display:none;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Od</span>
+        <input type="date" id="hist-dni-od" class="date-input" onchange="renderHistory()">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:500;color:var(--muted);width:20px">Do</span>
+        <input type="date" id="hist-dni-do" class="date-input" onchange="renderHistory()">
+      </div>
+    </div>
+
     <div class="type-toggle">
       <button class="type-btn active" id="type-wydatki" onclick="setHistType('wydatki',this)">💸 Wydatki</button>
       <button class="type-btn" id="type-wplywy" onclick="setHistType('wplywy',this)">💵 Wpływy</button>
@@ -274,7 +258,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-budzet" class="screen">
     <div class="header">
       <div><div class="header-title">🎯 Budżet</div></div>
-      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudzet()">↻</button><button class="refresh-btn" onclick="clearSession()" title="Wyloguj">🔓</button></div>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudzet()">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
     </div>
     <div style="padding:0 20px 12px;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;align-items:center;gap:8px">
@@ -351,34 +335,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwOKd97gCQ0QtLIvEXxCEGwW1muVooFeRtxTuJ69oereFAzJDUTsPbsyqRwiF5mlPcBVg/exec";
 const MP  = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
 
-// ── STATE ──
-let savedPin   = localStorage.getItem("bdpin")  || "";
-let currentUser= localStorage.getItem("bduser") || ""; // "Mąż" lub "Żona" — zalogowana osoba
-let currentKto = ""; // "Mąż" lub "Żona" — kto płaci w formularzu
-let pinBuffer  = "";
-let pendingDel = null;
-
-function displayName(osoba) {
-  return osoba === "Mąż" ? "Bartek" : osoba === "Żona" ? "Weronika" : osoba;
-}
-
-function setOwner(kto) {
-  // kto: 'bartek' lub 'weronika'
-  currentKto = kto === 'bartek' ? "Mąż" : "Żona";
-  const isMaz = kto === 'bartek';
-  document.querySelectorAll(".own-bartek").forEach(b => { if(isMaz) b.classList.add("active"); else b.classList.remove("active"); });
-  document.querySelectorAll(".own-weronika").forEach(b => { if(!isMaz) b.classList.add("active"); else b.classList.remove("active"); });
-  document.getElementById("btn-wydatek").classList.toggle("wife", !isMaz);
-  document.getElementById("btn-wplyw").classList.toggle("wife", !isMaz);
-}
+let savedPin    = localStorage.getItem("bdpin")  || "";
+let currentUser = localStorage.getItem("bduser") || "";
+let currentKto  = "";
+let pinBuffer   = "";
+let pendingDel  = null;
 let histType    = "wydatki";
+let histFilter  = "miesiac";
 let histYearOd  = new Date().getFullYear();
 let histMonthOd = new Date().getMonth();
 let histYearDo  = new Date().getFullYear();
@@ -389,316 +358,282 @@ let budzetYearOd  = new Date().getFullYear();
 let budzetMonthOd = new Date().getMonth();
 let budzetYearDo  = new Date().getFullYear();
 let budzetMonthDo = new Date().getMonth();
-async function submitPrzelew() {
-  const kwota = document.getElementById("kwota-p").value;
-  const opis  = document.getElementById("opis-p").value || "Przelew wewnętrzny";
-  const data  = document.getElementById("data-przelew").value;
-  if(!kwota || parseFloat(kwota) <= 0) { showToast("⚠️ Podaj kwotę","fail"); return; }
-  if(!currentUser) { showToast("⚠️ Błąd: brak zalogowanego użytkownika","fail"); return; }
-  const nadawca = currentUser;
-  const biorca  = currentUser === "Mąż" ? "Żona" : "Mąż";
-  const btn = document.getElementById("btn-przelew"); btn.classList.add("loading");
-  try {
-    // Krok 1: wydatek u nadawcy
-    const r1 = await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:nadawca})});
-    const j1 = await r1.json();
-    if(j1.status!=="ok"){ showToast("❌ Wydatek ("+displayName(nadawca)+"): "+j1.message,"fail"); btn.classList.remove("loading"); return; }
-    // Krok 2: wpływ u odbiorcy
-    const r2 = await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:biorca})});
-    const j2 = await r2.json();
-    if(j2.status!=="ok"){ showToast("❌ Wpływ ("+displayName(biorca)+"): "+j2.message,"fail"); btn.classList.remove("loading"); return; }
-    showToast("✓ "+displayName(nadawca)+" → "+displayName(biorca)+" "+fmt(kwota),"ok");
-    document.getElementById("kwota-p").value="";
-    document.getElementById("opis-p").value="";
-    document.getElementById("data-przelew").value=todayStr();
-    loadAllData();
-  } catch(err) { showToast("❌ Błąd: "+err.message,"fail"); }
-  btn.classList.remove("loading");
+
+function displayName(o){return o==="Mąż"?"Bartek":o==="Żona"?"Weronika":o}
+function todayStr(){return new Date().toISOString().split("T")[0]}
+function fmt(v){return(parseFloat(v)||0).toLocaleString("pl-PL",{minimumFractionDigits:0,maximumFractionDigits:2})+" zł"}
+
+function setOwner(kto){
+  currentKto=kto==='bartek'?"Mąż":"Żona";
+  const isMaz=kto==='bartek';
+  document.querySelectorAll(".own-bartek").forEach(b=>{if(isMaz)b.classList.add("active");else b.classList.remove("active")});
+  document.querySelectorAll(".own-weronika").forEach(b=>{if(!isMaz)b.classList.add("active");else b.classList.remove("active")});
+  document.getElementById("btn-wydatek").classList.toggle("wife",!isMaz);
+  document.getElementById("btn-wplyw").classList.toggle("wife",!isMaz);
 }
 
 // ── PIN ──
-function pinKey(d) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += d;
-  updateDots();
-  if (pinBuffer.length === 4) setTimeout(verifyPin, 120);
-}
-function pinDel() {
-  pinBuffer = pinBuffer.slice(0,-1);
-  updateDots();
-  document.getElementById("pin-error").textContent = "";
-  document.getElementById("pin-badge").className = "pin-user-badge";
-}
-function updateDots(cls="filled") {
-  for (let i=0;i<4;i++) {
-    const d = document.getElementById("d"+i);
-    d.className = "pin-dot" + (i < pinBuffer.length ? " "+cls : "");
-  }
+function pinKey(d){if(pinBuffer.length>=4)return;pinBuffer+=d;updateDots();if(pinBuffer.length===4)setTimeout(verifyPin,120)}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updateDots();document.getElementById("pin-error").textContent="";document.getElementById("pin-badge").className="pin-user-badge"}
+function updateDots(cls="filled"){for(let i=0;i<4;i++){const d=document.getElementById("d"+i);d.className="pin-dot"+(i<pinBuffer.length?" "+cls:"")}}
+
+async function verifyPin(){
+  if(savedPin&&pinBuffer===savedPin&&currentUser){pinSuccess(currentUser);return}
+  try{
+    const r=await fetch(API+"?action=login&pin="+pinBuffer);
+    const j=await r.json();
+    if(j.status==="ok"){localStorage.setItem("bdpin",pinBuffer);localStorage.setItem("bduser",j.osoba);savedPin=pinBuffer;currentUser=j.osoba;pinSuccess(j.osoba)}
+    else pinFail();
+  }catch{pinFail("Brak połączenia")}
 }
 
-async function verifyPin() {
-  // Jeśli ten sam PIN co zapisany — zaloguj bez API
-  if (savedPin && pinBuffer === savedPin && currentUser) {
-    pinSuccess(currentUser);
-    return;
-  }
-  try {
-    const r = await fetch(API + "?action=login&pin=" + pinBuffer);
-    const j = await r.json();
-    if (j.status === "ok") {
-      localStorage.setItem("bdpin",  pinBuffer);
-      localStorage.setItem("bduser", j.osoba);
-      savedPin    = pinBuffer;
-      currentUser = j.osoba;
-      pinSuccess(j.osoba);
-    } else {
-      pinFail();
-    }
-  } catch {
-    pinFail("Brak połączenia");
-  }
-}
-
-function pinSuccess(osoba) {
-  const isMaz = osoba === "Mąż";
-  // Pokaż badge
-  const badge = document.getElementById("pin-badge");
-  badge.textContent = isMaz ? "👨 Bartek" : "👩 Weronika";
-  badge.className   = "pin-user-badge " + (isMaz ? "show-maz" : "show-zona");
-  updateDots(isMaz ? "filled" : "filled-zona");
-  // Zmień na kolor użytkownika
-  for (let i=0;i<4;i++) document.getElementById("d"+i).className = "pin-dot success";
-  setTimeout(() => {
-    document.getElementById("pin-screen").style.display = "none";
+function pinSuccess(osoba){
+  const isMaz=osoba==="Mąż";
+  const badge=document.getElementById("pin-badge");
+  badge.textContent=isMaz?"👨 Bartek":"👩 Weronika";
+  badge.className="pin-user-badge "+(isMaz?"show-maz":"show-zona");
+  updateDots(isMaz?"filled":"filled-zona");
+  for(let i=0;i<4;i++)document.getElementById("d"+i).className="pin-dot success";
+  setTimeout(()=>{
+    document.getElementById("pin-screen").style.display="none";
     document.getElementById("app").classList.add("visible");
-    document.getElementById("bottom-nav").style.display = "flex";
+    document.getElementById("bottom-nav").style.display="flex";
     initApp(osoba);
-  }, 350);
+  },350);
 }
 
-function pinFail(msg) {
-  updateDots("error");
-  document.getElementById("pin-error").textContent = msg || "Nieprawidłowy PIN";
-  setTimeout(() => { pinBuffer = ""; updateDots(); }, 800);
-}
+function pinFail(msg){updateDots("error");document.getElementById("pin-error").textContent=msg||"Nieprawidłowy PIN";setTimeout(()=>{pinBuffer="";updateDots()},800)}
 
-function clearSession() {
-  localStorage.removeItem("bdpin");
-  localStorage.removeItem("bduser");
-  savedPin = ""; currentUser = ""; currentKto = "";
-  pinBuffer = ""; updateDots();
-  document.getElementById("pin-screen").style.display = "";
+function clearSession(){
+  localStorage.removeItem("bdpin");localStorage.removeItem("bduser");
+  savedPin="";currentUser="";currentKto="";pinBuffer="";updateDots();
+  document.getElementById("pin-screen").style.display="";
   document.getElementById("app").classList.remove("visible");
-  document.getElementById("bottom-nav").style.display = "none";
-  document.getElementById("pin-error").textContent = "";
+  document.getElementById("bottom-nav").style.display="none";
+  document.getElementById("pin-error").textContent="";
   showToast("Wylogowano","ok");
 }
 
-// ── APP INIT ──
-function initApp(osoba) {
-  const isMaz = osoba === "Mąż";
-  const t = new Date().toISOString().split("T")[0];
-  document.getElementById("data-wydatek").value = t;
-  document.getElementById("data-wplyw").value   = t;
+function initApp(osoba){
+  const isMaz=osoba==="Mąż";
+  const t=todayStr();
+  document.getElementById("data-wydatek").value=t;
+  document.getElementById("data-wplyw").value=t;
+  document.getElementById("data-przelew").value=t;
+  // Ustaw domyślne daty dla filtru dziennego
+  document.getElementById("hist-dni-od").value=t;
+  document.getElementById("hist-dni-do").value=t;
 
-  const n  = new Date();
-  const ds = n.toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"});
-  document.getElementById("date-display").textContent   = ds;
-  document.getElementById("date-display-w").textContent = ds;
-  document.getElementById("date-display-p").textContent = ds;
-  document.getElementById("data-przelew").value = t;
+  const n=new Date();
+  const ds=n.toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"});
+  document.getElementById("date-display").textContent=ds;
+  document.getElementById("date-display-w").textContent=ds;
+  document.getElementById("date-display-p").textContent=ds;
 
-  // Chip z nazwą zalogowanej osoby
-  const chipLabel = isMaz ? "👨 Bartek" : "👩 Weronika";
-  const chipCls   = isMaz ? "chip-maz" : "chip-zona";
-  document.getElementById("user-chip-w").textContent = chipLabel;
-  document.getElementById("user-chip-w").className   = "user-chip " + chipCls;
-  document.getElementById("user-chip-i").textContent = chipLabel;
-  document.getElementById("user-chip-i").className   = "user-chip " + chipCls;
-  document.getElementById("user-chip-p").textContent = chipLabel;
-  document.getElementById("user-chip-p").className   = "user-chip " + chipCls;
-  // Etykieta kierunku przelewu
-  const pOd = isMaz ? "Bartek" : "Weronika";
-  const pDo = isMaz ? "Weronika" : "Bartek";
-  document.getElementById("przelew-label").textContent = pOd + " → " + pDo;
-
-  // Domyślnie kto płaci = zalogowana osoba
-  setOwner(osoba === "Mąż" ? 'bartek' : 'weronika');
-
+  const chipLabel=isMaz?"👨 Bartek":"👩 Weronika";
+  const chipCls=isMaz?"chip-maz":"chip-zona";
+  ["user-chip-w","user-chip-i","user-chip-p"].forEach(id=>{
+    document.getElementById(id).textContent=chipLabel;
+    document.getElementById(id).className="user-chip "+chipCls;
+  });
+  document.getElementById("przelew-label").textContent=(isMaz?"Bartek":"Weronika")+" → "+(isMaz?"Weronika":"Bartek");
+  setOwner(osoba==="Mąż"?"bartek":"weronika");
   updateHistRangeLabel();
   updateBudzetMonthLabel();
   loadAllData();
-
 }
 
-function switchScreen(n) {
+function switchScreen(n){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
   document.getElementById("screen-"+n).classList.add("active");
   document.getElementById("nav-"+n).classList.add("active");
-  if (n==="budzet") loadBudzet();
+  if(n==="budzet"){const now=new Date();budzetYearOd=now.getFullYear();budzetMonthOd=now.getMonth();budzetYearDo=now.getFullYear();budzetMonthDo=now.getMonth();updateBudzetMonthLabel();loadBudzet()}
 }
 
-function showToast(msg,type="ok") {
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.className="toast "+type+" show";
-  setTimeout(()=>t.className="toast",2800);
-}
-
-function todayStr(){return new Date().toISOString().split("T")[0]}
+function showToast(msg,type="ok"){const t=document.getElementById("toast");t.textContent=msg;t.className="toast "+type+" show";setTimeout(()=>t.className="toast",2800)}
 
 // ── SUBMIT ──
-async function submitWydatek() {
+async function submitWydatek(){
   const kwota=document.getElementById("kwota").value;
-  const kat  =document.getElementById("kategoria").value;
-  const opis =document.getElementById("opis").value;
-  const data =document.getElementById("data-wydatek").value;
+  const kat=document.getElementById("kategoria").value;
+  const opis=document.getElementById("opis").value;
+  const data=document.getElementById("data-wydatek").value;
   if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
   if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
-  const btn=document.getElementById("btn-wydatek"); btn.classList.add("loading");
-  try {
+  const btn=document.getElementById("btn-wydatek");btn.classList.add("loading");
+  try{
     const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:kat,opis:opis||kat,data,kto:currentKto})});
     const j=await r.json();
-    if(j.status==="ok"){
-      showToast("✓ Zapisano!","ok");
-      document.getElementById("kwota").value="";
-      document.getElementById("opis").value="";
-      document.getElementById("kategoria").value="";
-      document.getElementById("data-wydatek").value=todayStr();
-      loadAllData();
-    } else showToast("❌ "+j.message,"fail");
-  } catch { showToast("❌ Brak połączenia","fail"); }
+    if(j.status==="ok"){showToast("✓ Zapisano!","ok");document.getElementById("kwota").value="";document.getElementById("opis").value="";document.getElementById("kategoria").value="";document.getElementById("data-wydatek").value=todayStr();loadAllData()}
+    else showToast("❌ "+j.message,"fail");
+  }catch{showToast("❌ Brak połączenia","fail")}
   btn.classList.remove("loading");
 }
 
-async function submitWplyw() {
+async function submitWplyw(){
   const kwota=document.getElementById("kwota-w").value;
-  const kat  =document.getElementById("kategoria-w").value;
-  const opis =document.getElementById("opis-w").value;
-  const data =document.getElementById("data-wplyw").value;
+  const kat=document.getElementById("kategoria-w").value;
+  const opis=document.getElementById("opis-w").value;
+  const data=document.getElementById("data-wplyw").value;
   if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
   if(!kat){showToast("⚠️ Wybierz kategorię","fail");return}
-  const btn=document.getElementById("btn-wplyw"); btn.classList.add("loading");
-  try {
+  const btn=document.getElementById("btn-wplyw");btn.classList.add("loading");
+  try{
     const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:kat,opis:opis||kat,data,kto:currentKto})});
     const j=await r.json();
-    if(j.status==="ok"){
-      showToast("✓ Zapisano!","ok");
-      document.getElementById("kwota-w").value="";
-      document.getElementById("opis-w").value="";
-      document.getElementById("kategoria-w").value="";
-      document.getElementById("data-wplyw").value=todayStr();
-      loadAllData();
-    } else showToast("❌ "+j.message,"fail");
-  } catch { showToast("❌ Brak połączenia","fail"); }
+    if(j.status==="ok"){showToast("✓ Zapisano!","ok");document.getElementById("kwota-w").value="";document.getElementById("opis-w").value="";document.getElementById("kategoria-w").value="";document.getElementById("data-wplyw").value=todayStr();loadAllData()}
+    else showToast("❌ "+j.message,"fail");
+  }catch{showToast("❌ Brak połączenia","fail")}
+  btn.classList.remove("loading");
+}
+
+async function submitPrzelew(){
+  const kwota=document.getElementById("kwota-p").value;
+  const opis=document.getElementById("opis-p").value||"Przelew wewnętrzny";
+  const data=document.getElementById("data-przelew").value;
+  if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
+  const nadawca=currentUser;const biorca=currentUser==="Mąż"?"Żona":"Mąż";
+  const btn=document.getElementById("btn-przelew");btn.classList.add("loading");
+  try{
+    const r1=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWydatek",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:nadawca})});
+    const j1=await r1.json();
+    if(j1.status!=="ok"){showToast("❌ "+j1.message,"fail");btn.classList.remove("loading");return}
+    const r2=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajWplyw",kwota,kategoria:"Przelew wewnętrzny",opis,data,kto:biorca})});
+    const j2=await r2.json();
+    if(j2.status!=="ok"){showToast("❌ "+j2.message,"fail");btn.classList.remove("loading");return}
+    showToast("✓ "+displayName(nadawca)+" → "+displayName(biorca)+" "+fmt(kwota),"ok");
+    document.getElementById("kwota-p").value="";document.getElementById("opis-p").value="";document.getElementById("data-przelew").value=todayStr();
+    loadAllData();
+  }catch(err){showToast("❌ "+err.message,"fail")}
   btn.classList.remove("loading");
 }
 
 // ── LOAD DATA ──
-async function loadAllData() {
-  try {
-    const [rw,ri] = await Promise.all([
-      fetch(API+"?action=pobierzWydatki&pin="+savedPin),
-      fetch(API+"?action=pobierzWplywy&pin="+savedPin)
-    ]);
-    const jw=await rw.json(); const ji=await ri.json();
-    if(jw.status==="ok") allWydatki=jw.data||[];
-    if(ji.status==="ok") allWplywy =ji.data||[];
+async function loadAllData(){
+  try{
+    const[rw,ri]=await Promise.all([fetch(API+"?action=pobierzWydatki&pin="+savedPin),fetch(API+"?action=pobierzWplywy&pin="+savedPin)]);
+    const jw=await rw.json();const ji=await ri.json();
+    if(jw.status==="ok")allWydatki=jw.data||[];
+    if(ji.status==="ok")allWplywy=ji.data||[];
     renderHistory();
-  } catch { showToast("❌ Błąd ładowania","fail"); }
+  }catch{showToast("❌ Błąd ładowania","fail")}
 }
 
-// ── HISTORY ──
-function updateHistRangeLabel() {
-  document.getElementById("hist-od-label").textContent = MP[histMonthOd]+" "+histYearOd;
-  document.getElementById("hist-do-label").textContent = MP[histMonthDo]+" "+histYearDo;
+// ── HISTORIA — FILTR ──
+function setHistFilter(type,el){
+  histFilter=type;
+  document.querySelectorAll("#filter-mies,#filter-dni").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("filter-miesiac-block").style.display=type==="miesiac"?"flex":"none";
+  document.getElementById("filter-dni-block").style.display=type==="dni"?"flex":"none";
+  renderHistory();
 }
-function changeHistRange(which, dir) {
-  if(which==='od'){
-    histMonthOd+=dir;
-    if(histMonthOd>11){histMonthOd=0;histYearOd++}
-    if(histMonthOd<0){histMonthOd=11;histYearOd--}
-  } else {
-    histMonthDo+=dir;
-    if(histMonthDo>11){histMonthDo=0;histYearDo++}
-    if(histMonthDo<0){histMonthDo=11;histYearDo--}
-  }
-  updateHistRangeLabel(); renderHistory();
+
+function updateHistRangeLabel(){
+  document.getElementById("hist-od-label").textContent=MP[histMonthOd]+" "+histYearOd;
+  document.getElementById("hist-do-label").textContent=MP[histMonthDo]+" "+histYearDo;
 }
-function setHistType(type,el) {
+function changeHistRange(which,dir){
+  if(which==="od"){histMonthOd+=dir;if(histMonthOd>11){histMonthOd=0;histYearOd++}if(histMonthOd<0){histMonthOd=11;histYearOd--}}
+  else{histMonthDo+=dir;if(histMonthDo>11){histMonthDo=0;histYearDo++}if(histMonthDo<0){histMonthDo=11;histYearDo--}}
+  updateHistRangeLabel();renderHistory();
+}
+function setHistType(type,el){
   histType=type;
   document.querySelectorAll(".type-btn").forEach(b=>b.classList.remove("active","inc"));
-  el.classList.add("active"); if(type==="wplywy") el.classList.add("inc");
+  el.classList.add("active");if(type==="wplywy")el.classList.add("inc");
   document.getElementById("hist-list-label").textContent=type==="wydatki"?"Wydatki":"Wpływy";
   renderHistory();
 }
-function renderHistory() {
+
+// Konwertuje "dd.MM.yyyy" na porównywalne "yyyy-MM-dd"
+function dateToSort(d){if(!d)return"";const p=d.split(".");return p.length===3?p[2]+"-"+p[1]+"-"+p[0]:""}
+
+function renderHistory(){
   const data=histType==="wydatki"?allWydatki:allWplywy;
-  const filtered=data.filter(i=>{
-    const idx=MP.indexOf(i.miesiac), rok=parseInt(i.rok);
-    const odOk=rok>histYearOd||(rok===histYearOd&&idx>=histMonthOd);
-    const doOk=rok<histYearDo||(rok===histYearDo&&idx<=histMonthDo);
-    return odOk&&doOk;
-  });
+  let filtered;
+
+  if(histFilter==="dni"){
+    const od=document.getElementById("hist-dni-od").value;
+    const do_=document.getElementById("hist-dni-do").value;
+    if(!od||!do_){
+      document.getElementById("history-list").innerHTML='<div class="history-empty">Wybierz zakres dat</div>';
+      document.getElementById("stat-maz").textContent="—";document.getElementById("stat-zona").textContent="—";
+      document.getElementById("stat-total").textContent="—";document.getElementById("stat-count").textContent="—";
+      document.getElementById("hist-kat-list").innerHTML="";return;
+    }
+    filtered=data.filter(i=>{const ds=dateToSort(i.data);return ds>=od&&ds<=do_});
+  } else {
+    filtered=data.filter(i=>{
+      const idx=MP.indexOf(i.miesiac),rok=parseInt(i.rok);
+      const odOk=rok>histYearOd||(rok===histYearOd&&idx>=histMonthOd);
+      const doOk=rok<histYearDo||(rok===histYearDo&&idx<=histMonthDo);
+      return odOk&&doOk;
+    });
+  }
+
   const isInc=histType==="wplywy";
   let ms=0,zs=0;
   filtered.forEach(i=>{
-    if(isInc && i.kategoria==="Przelew wewnętrzny") return; // w wpływach przelew nie liczy się w statach
-    if(i.kto==="Mąż")  ms+=parseFloat(i.kwota)||0;
-    if(i.kto==="Żona") zs+=parseFloat(i.kwota)||0;
+    if(isInc&&i.kategoria==="Przelew wewnętrzny")return;
+    if(i.kto==="Mąż")ms+=parseFloat(i.kwota)||0;
+    if(i.kto==="Żona")zs+=parseFloat(i.kwota)||0;
   });
-  document.getElementById("stat-maz").textContent  =fmt(ms);
-  document.getElementById("stat-zona").textContent =fmt(zs);
+  document.getElementById("stat-maz").textContent=fmt(ms);
+  document.getElementById("stat-zona").textContent=fmt(zs);
   document.getElementById("stat-total").textContent=fmt(ms+zs);
   document.getElementById("stat-count").textContent=filtered.length;
+
   const list=document.getElementById("history-list");
-  if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów w wybranym zakresie</div>';return}
-  list.innerHTML=filtered.map(i=>{
-    const im=i.kto==="Mąż";
-    const desc=(i.opis||i.kategoria).replace(/'/g,"\\'");
-    return`<div class="history-item">
-      <div class="history-dot ${im?'dot-maz':'dot-zona'}"></div>
-      <div class="history-body">
-        <div class="history-desc">${i.opis||i.kategoria}</div>
-        <div class="history-meta">${i.data} · ${i.kategoria} · ${displayName(i.kto)}</div>
-      </div>
-      <div class="history-amount ${isInc?'amt-inc':im?'amt-maz':'amt-zona'}">${fmt(i.kwota)}</div>
-      <button class="btn-del" onclick="askDel(${i.sheetRow},'${desc}','${isInc?'usunWplyw':'usunWydatek'}')">✕</button>
-    </div>`;
-  }).join("");
-  // Per kategoria
-  const katMap={};
-  filtered.forEach(i=>{
-    if(isInc && i.kategoria==="Przelew wewnętrzny") return;
-    if(!katMap[i.kategoria]) katMap[i.kategoria]={maz:0,zona:0};
-    if(i.kto==="Mąż")  katMap[i.kategoria].maz  +=parseFloat(i.kwota)||0;
-    if(i.kto==="Żona") katMap[i.kategoria].zona +=parseFloat(i.kwota)||0;
-  });
-  const katEl=document.getElementById("hist-kat-list");
-  if(katEl){
-    const kats=Object.entries(katMap).sort((a,b)=>(b[1].maz+b[1].zona)-(a[1].maz+a[1].zona));
-    if(!kats.length){katEl.innerHTML='';return;}
-    katEl.innerHTML=kats.map(([nazwa,v])=>{
-      const razem=v.maz+v.zona;
-      const mazPct=razem>0?Math.round(v.maz/razem*100):0;
-      return`<div class="budget-row">
-        <div class="budget-row-left">
-          <div class="budget-row-name">${nazwa}</div>
-          <div class="budget-bar-wrap" style="margin:5px 0 3px">
-            <div style="height:100%;display:flex;border-radius:2px;overflow:hidden">
-              <div style="width:${mazPct}%;background:var(--man);transition:width .6s"></div>
-              <div style="width:${100-mazPct}%;background:var(--wife);transition:width .6s"></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;font-size:11px">
-            <span style="color:var(--man)">👨 ${fmt(v.maz)}</span>
-            <span style="color:var(--wife)">👩 ${fmt(v.zona)}</span>
-          </div>
+  if(!filtered.length){list.innerHTML='<div class="history-empty">Brak wpisów w wybranym zakresie</div>'}
+  else{
+    list.innerHTML=filtered.map(i=>{
+      const im=i.kto==="Mąż";
+      const desc=(i.opis||i.kategoria).replace(/'/g,"\\'");
+      return`<div class="history-item">
+        <div class="history-dot ${im?"dot-maz":"dot-zona"}"></div>
+        <div class="history-body">
+          <div class="history-desc">${i.opis||i.kategoria}</div>
+          <div class="history-meta">${i.data} · ${i.kategoria} · ${displayName(i.kto)}</div>
         </div>
-        <div class="budget-row-right"><div class="budget-spent">${fmt(razem)}</div></div>
+        <div class="history-amount ${isInc?"amt-inc":im?"amt-maz":"amt-zona"}">${fmt(i.kwota)}</div>
+        <button class="btn-del" onclick="askDel(${i.sheetRow},'${desc}','${isInc?"usunWplyw":"usunWydatek"}')">✕</button>
       </div>`;
     }).join("");
   }
+
+  // Per kategoria
+  const katMap={};
+  filtered.forEach(i=>{
+    if(isInc&&i.kategoria==="Przelew wewnętrzny")return;
+    if(!katMap[i.kategoria])katMap[i.kategoria]={maz:0,zona:0};
+    if(i.kto==="Mąż")katMap[i.kategoria].maz+=parseFloat(i.kwota)||0;
+    if(i.kto==="Żona")katMap[i.kategoria].zona+=parseFloat(i.kwota)||0;
+  });
+  const katEl=document.getElementById("hist-kat-list");
+  const kats=Object.entries(katMap).sort((a,b)=>(b[1].maz+b[1].zona)-(a[1].maz+a[1].zona));
+  if(!kats.length){katEl.innerHTML="";return}
+  katEl.innerHTML=kats.map(([nazwa,v])=>{
+    const razem=v.maz+v.zona;
+    const mazPct=razem>0?Math.round(v.maz/razem*100):0;
+    return`<div class="budget-row">
+      <div class="budget-row-left">
+        <div class="budget-row-name">${nazwa}</div>
+        <div class="budget-bar-wrap" style="margin:5px 0 3px">
+          <div style="height:100%;display:flex;border-radius:2px;overflow:hidden">
+            <div style="width:${mazPct}%;background:var(--man);transition:width .6s"></div>
+            <div style="width:${100-mazPct}%;background:var(--wife);transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;font-size:11px">
+          <span style="color:var(--man)">👨 ${fmt(v.maz)}</span>
+          <span style="color:var(--wife)">👩 ${fmt(v.zona)}</span>
+        </div>
+      </div>
+      <div class="budget-row-right"><div class="budget-spent">${fmt(razem)}</div></div>
+    </div>`;
+  }).join("");
 }
 
 // ── DELETE ──
@@ -712,53 +647,42 @@ async function confirmDel(){
 }
 
 // ── BUDŻET ──
-function updateBudzetMonthLabel() {
-  document.getElementById("budzet-od-label").textContent = MP[budzetMonthOd]+" "+budzetYearOd;
-  document.getElementById("budzet-do-label").textContent = MP[budzetMonthDo]+" "+budzetYearDo;
+function updateBudzetMonthLabel(){
+  document.getElementById("budzet-od-label").textContent=MP[budzetMonthOd]+" "+budzetYearOd;
+  document.getElementById("budzet-do-label").textContent=MP[budzetMonthDo]+" "+budzetYearDo;
 }
-function changeBudzetRange(which, dir) {
-  if (which === 'od') {
-    budzetMonthOd += dir;
-    if(budzetMonthOd > 11){budzetMonthOd = 0; budzetYearOd++;}
-    if(budzetMonthOd < 0){budzetMonthOd = 11; budzetYearOd--;}
-  } else {
-    budzetMonthDo += dir;
-    if(budzetMonthDo > 11){budzetMonthDo = 0; budzetYearDo++;}
-    if(budzetMonthDo < 0){budzetMonthDo = 11; budzetYearDo--;}
-  }
-  updateBudzetMonthLabel();
-  loadBudzet();
+function changeBudzetRange(which,dir){
+  if(which==="od"){budzetMonthOd+=dir;if(budzetMonthOd>11){budzetMonthOd=0;budzetYearOd++}if(budzetMonthOd<0){budzetMonthOd=11;budzetYearOd--}}
+  else{budzetMonthDo+=dir;if(budzetMonthDo>11){budzetMonthDo=0;budzetYearDo++}if(budzetMonthDo<0){budzetMonthDo=11;budzetYearDo--}}
+  updateBudzetMonthLabel();loadBudzet();
 }
 async function loadBudzet(){
   document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
   try{
-    const params = "action=pobierzBudzet&pin="+savedPin
-      +"&miesiacOd="+encodeURIComponent(MP[budzetMonthOd])+"&rokOd="+budzetYearOd
-      +"&miesiacDo="+encodeURIComponent(MP[budzetMonthDo])+"&rokDo="+budzetYearDo;
+    const params="action=pobierzBudzet&pin="+savedPin+"&miesiacOd="+encodeURIComponent(MP[budzetMonthOd])+"&rokOd="+budzetYearOd+"&miesiacDo="+encodeURIComponent(MP[budzetMonthDo])+"&rokDo="+budzetYearDo;
     const r=await fetch(API+"?"+params);const j=await r.json();
     if(j.status!=="ok"){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ '+j.message+'</div>';return}
-    const bW=j.mazWplywy||0, bY=j.mazWydTotal||0, bZ=bW-bY;
-    const wW=j.zonaWplywy||0, wY=j.zonaWydTotal||0, wZ=wW-wY;
-    document.getElementById("bud-b-wplywy").textContent  = fmt(bW);
-    document.getElementById("bud-b-wydatki").textContent = fmt(bY);
-    document.getElementById("bud-b-zostalo").textContent = fmt(bZ);
-    document.getElementById("bud-b-bar").style.width = bW>0?Math.min(bY/bW*100,100)+"%" : "0%";
-    document.getElementById("bud-w-wplywy").textContent  = fmt(wW);
-    document.getElementById("bud-w-wydatki").textContent = fmt(wY);
-    document.getElementById("bud-w-zostalo").textContent = fmt(wZ);
-    document.getElementById("bud-w-bar").style.width = wW>0?Math.min(wY/wW*100,100)+"%" : "0%";
+    const bW=j.mazWplywy||0,bY=j.mazWydTotal||0;
+    const wW=j.zonaWplywy||0,wY=j.zonaWydTotal||0;
+    document.getElementById("bud-b-wplywy").textContent=fmt(bW);
+    document.getElementById("bud-b-wydatki").textContent=fmt(bY);
+    document.getElementById("bud-b-zostalo").textContent=fmt(bW-bY);
+    document.getElementById("bud-b-bar").style.width=bW>0?Math.min(bY/bW*100,100)+"%":"0%";
+    document.getElementById("bud-w-wplywy").textContent=fmt(wW);
+    document.getElementById("bud-w-wydatki").textContent=fmt(wY);
+    document.getElementById("bud-w-zostalo").textContent=fmt(wW-wY);
+    document.getElementById("bud-w-bar").style.width=wW>0?Math.min(wY/wW*100,100)+"%":"0%";
     const rows=(j.kategorie||[]).filter(k=>k.razem>0);
     if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak wydatków w tym zakresie</div>';return}
     document.getElementById("budzet-list").innerHTML=rows.map(k=>{
-      const mazPct  = k.razem > 0 ? Math.round(k.maz  / k.razem * 100) : 0;
-      const zonaPct = 100 - mazPct;
+      const mazPct=k.razem>0?Math.round(k.maz/k.razem*100):0;
       return`<div class="budget-row">
         <div class="budget-row-left">
           <div class="budget-row-name">${k.nazwa}</div>
           <div class="budget-bar-wrap" style="margin:5px 0 3px">
             <div style="height:100%;display:flex;border-radius:2px;overflow:hidden">
               <div style="width:${mazPct}%;background:var(--man);transition:width .6s"></div>
-              <div style="width:${zonaPct}%;background:var(--wife);transition:width .6s"></div>
+              <div style="width:${100-mazPct}%;background:var(--wife);transition:width .6s"></div>
             </div>
           </div>
           <div style="display:flex;gap:10px;font-size:11px">
@@ -766,21 +690,17 @@ async function loadBudzet(){
             <span style="color:var(--wife)">👩 ${fmt(k.zona)}</span>
           </div>
         </div>
-        <div class="budget-row-right">
-          <div class="budget-spent">${fmt(k.razem)}</div>
-        </div>
+        <div class="budget-row-right"><div class="budget-spent">${fmt(k.razem)}</div></div>
       </div>`;
     }).join("");
   }catch{document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ Błąd połączenia</div>'}
 }
 
-function fmt(v){return(parseFloat(v)||0).toLocaleString("pl-PL",{minimumFractionDigits:0,maximumFractionDigits:2})+" zł"}
-
 // ── START ──
-if (savedPin && currentUser) {
-  document.getElementById("pin-screen").style.display = "none";
+if(savedPin&&currentUser){
+  document.getElementById("pin-screen").style.display="none";
   document.getElementById("app").classList.add("visible");
-  document.getElementById("bottom-nav").style.display = "flex";
+  document.getElementById("bottom-nav").style.display="flex";
   initApp(currentUser);
 }
 </script>
