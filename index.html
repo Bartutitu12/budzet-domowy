@@ -702,30 +702,22 @@ async function saveEdit(){
   const kat=getEditKat();
   const data=document.getElementById("edit-data").value;
   if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
+  const item={...editItem};
   closeEdit();
-  const action=editItem.type==="wydatki"?"edytujWydatek":"edytujWplyw";
+  const action=item.type==="wydatki"?"edytujWydatek":"edytujWplyw";
   try{
-    const r=await fetch(API,{method:"POST",body:JSON.stringify({
-      pin:savedPin, action,
-      rowIndex:editItem.sheetRow,
-      kwota, kategoria:kat,
-      opis:opis||kat,
-      data,
-      kto:editItem.kto
-    })});
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action,rowIndex:item.sheetRow,kwota,kategoria:kat,opis:opis||kat,data,kto:item.kto})});
     const j=await r.json();
     if(j.status==="ok"){showToast("✓ Zaktualizowano!","ok");loadAllData()}
     else showToast("❌ "+j.message,"fail");
   }catch{showToast("❌ Brak połączenia","fail")}
 }
-
 async function deleteEdit(){
   if(!editItem)return;
-  const action=editItem.type==="wydatki"?"usunWydatek":"usunWplyw";
-  const row=editItem.sheetRow;
+  const item={...editItem};
   closeEdit();
   try{
-    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action,rowIndex:row})});
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:item.type==="wydatki"?"usunWydatek":"usunWplyw",rowIndex:item.sheetRow})});
     const j=await r.json();
     if(j.status==="ok"){showToast("✓ Usunięto","ok");loadAllData()}
     else showToast("❌ "+j.message,"fail");
