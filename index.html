@@ -318,6 +318,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="section-label">Wydatki per kategoria</div>
       <div class="card" id="budzet-list"><div class="budget-loading">Ładowanie...</div></div>
     </div>
+    <!-- WYKRESY -->
+    <div class="section">
+      <div class="section-label">Wydatki per kategoria — wykres</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <canvas id="chart-kat" height="260"></canvas>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Wpływy vs wydatki — ostatnie 6 miesięcy</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <canvas id="chart-bilans" height="220"></canvas>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Wydatki miesiąc po miesiącu</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <canvas id="chart-trend" height="200"></canvas>
+      </div>
+    </div>
   </div>
 
 </div><!-- /app -->
@@ -336,8 +355,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="edit-field"><div class="edit-label">Kwota (zł)</div><input type="number" class="edit-input" id="edit-kwota" step="0.01" min="0" inputmode="decimal"></div>
     <div class="edit-field"><div class="edit-label">Opis</div><input type="text" class="edit-input" id="edit-opis"></div>
     <div class="edit-field" id="edit-kat-wrap"><div class="edit-label">Kategoria</div>
-      <select class="edit-select" id="edit-kategoria">
-        <option>Spożywka</option><option>Paliwo</option><option>Restauracje</option><option>Rachunki stałe</option><option>Abonamenty</option><option>Zdrowie / apteka</option><option>Odzież</option><option>Rozrywka</option><option>Dziecko</option><option>Budowa</option><option>Dom</option><option>Samochód</option><option>Elektronika</option><option>Kosmetyki</option><option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Pizzaparty</option><option>Makijaż</option><option>Włosy</option><option>Inne</option>
+      <select class="edit-select" id="edit-kategoria-wyd">
+        <option>Spożywka</option><option>Paliwo</option><option>Restauracje</option><option>Rachunki stałe</option><option>Abonamenty</option><option>Zdrowie / apteka</option><option>Odzież</option><option>Rozrywka</option><option>Dziecko</option><option>Budowa</option><option>Dom</option><option>Samochód</option><option>Elektronika</option><option>Kosmetyki</option><option>Inne</option>
+      </select>
+      <select class="edit-select" id="edit-kategoria-wpl" style="display:none">
+        <option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Pizzaparty</option><option>Makijaż</option><option>Włosy</option><option>Inne</option>
       </select>
     </div>
     <div class="edit-field"><div class="edit-label">Data</div><input type="date" class="edit-input" id="edit-data"></div>
@@ -357,8 +379,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwOKd97gCQ0QtLIvEXxCEGwW1muVooFeRtxTuJ69oereFAzJDUTsPbsyqRwiF5mlPcBVg/exec";
+let chartKat = null, chartBilans = null, chartTrend = null;
 const MP  = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
 
 let savedPin    = localStorage.getItem("bdpin")  || "";
@@ -643,10 +667,15 @@ function openEdit(sheetRow){
   const item=data.find(i=>i.sheetRow===sheetRow);
   if(!item)return;
   editItem={...item,type:histType};
-  document.getElementById("edit-title").textContent=histType==="wydatki"?"✏️ Edytuj wydatek":"✏️ Edytuj wpływ";
+  const isWyd=histType==="wydatki";
+  document.getElementById("edit-title").textContent=isWyd?"✏️ Edytuj wydatek":"✏️ Edytuj wpływ";
   document.getElementById("edit-kwota").value=parseFloat(item.kwota)||"";
   document.getElementById("edit-opis").value=item.opis||"";
-  document.getElementById("edit-kategoria").value=item.kategoria||"";
+  // Pokaż właściwą listę kategorii
+  const selWyd=document.getElementById("edit-kategoria-wyd");
+  const selWpl=document.getElementById("edit-kategoria-wpl");
+  if(isWyd){selWyd.style.display="";selWpl.style.display="none";selWyd.value=item.kategoria||selWyd.options[0].value}
+  else{selWyd.style.display="none";selWpl.style.display="";selWpl.value=item.kategoria||selWpl.options[0].value}
   // data z dd.MM.yyyy na yyyy-MM-dd
   const dp=item.data.split(".");
   document.getElementById("edit-data").value=dp.length===3?dp[2]+"-"+dp[1]+"-"+dp[0]:"";
@@ -661,15 +690,19 @@ function setEditOwner(kto){
 }
 function closeEdit(){editItem=null;document.getElementById("edit-sheet").classList.remove("show")}
 
+function getEditKat(){
+  const isWyd=editItem&&editItem.type==="wydatki";
+  return document.getElementById(isWyd?"edit-kategoria-wyd":"edit-kategoria-wpl").value;
+}
+
 async function saveEdit(){
   if(!editItem)return;
   const kwota=document.getElementById("edit-kwota").value;
   const opis=document.getElementById("edit-opis").value;
-  const kat=document.getElementById("edit-kategoria").value;
+  const kat=getEditKat();
   const data=document.getElementById("edit-data").value;
   if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
   closeEdit();
-  // Usuń stary wiersz i dodaj nowy z nowymi danymi
   const action=editItem.type==="wydatki"?"usunWydatek":"usunWplyw";
   const addAction=editItem.type==="wydatki"?"dodajWydatek":"dodajWplyw";
   try{
@@ -724,8 +757,7 @@ async function loadBudzet(){
     document.getElementById("bud-w-bar").style.width=wW>0?Math.min(wY/wW*100,100)+"%":"0%";
     const rows=(j.kategorie||[]).filter(k=>k.razem>0);
     if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak wydatków w tym zakresie</div>';return}
-    document.getElementById("budzet-list").innerHTML=rows.map(k=>{
-      const mazPct=k.razem>0?Math.round(k.maz/k.razem*100):0;
+    document.getElementById("budzet-list").innerHTML=rows.map(k=>{      const mazPct=k.razem>0?Math.round(k.maz/k.razem*100):0;
       return`<div class="budget-row">
         <div class="budget-row-left">
           <div class="budget-row-name">${k.nazwa}</div>
@@ -735,7 +767,105 @@ async function loadBudzet(){
         <div class="budget-row-right"><div class="budget-spent">${fmt(k.razem)}</div></div>
       </div>`;
     }).join("");
+    // Rysuj wykresy po załadowaniu danych
+    renderCharts(rows, allWydatki, allWplywy);
   }catch{document.getElementById("budzet-list").innerHTML='<div class="budget-loading">❌ Błąd połączenia</div>'}
+}
+
+function renderCharts(kategorie, allWyd, allWpl){
+  const isDark = true;
+  const textColor = "#6b6a7a";
+  const gridColor = "rgba(255,255,255,0.05)";
+  Chart.defaults.color = textColor;
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+  // ── WYKRES 1: Kołowy — wydatki per kategoria ──
+  const katNames = kategorie.map(k=>k.nazwa);
+  const katVals  = kategorie.map(k=>k.razem);
+  const palette  = ["#4da6ff","#c084fc","#34d399","#fbbf24","#f87171","#60efff","#ff6b9d","#a78bfa","#34d399","#fb923c","#e879f9","#22d3ee","#4ade80","#facc15"];
+  const colors   = katNames.map((_,i)=>palette[i%palette.length]);
+
+  if(chartKat) chartKat.destroy();
+  const ctxKat = document.getElementById("chart-kat").getContext("2d");
+  chartKat = new Chart(ctxKat, {
+    type: "doughnut",
+    data: { labels: katNames, datasets: [{ data: katVals, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position:"right", labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)}` } }
+      },
+      cutout: "60%"
+    }
+  });
+
+  // Przygotuj ostatnie 6 miesięcy
+  const now = new Date();
+  const months6 = [];
+  for(let i=5;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months6.push({ label: MP[d.getMonth()].slice(0,3)+" "+d.getFullYear(), miesiac: MP[d.getMonth()], rok: d.getFullYear() });
+  }
+
+  function sumForMonth(data, miesiac, rok){
+    return data.filter(i=>i.miesiac===miesiac&&parseInt(i.rok)===rok&&i.kategoria!=="Przelew wewnętrzny").reduce((s,i)=>s+(parseFloat(i.kwota)||0),0);
+  }
+
+  const wydMiesiace = months6.map(m=>sumForMonth(allWyd, m.miesiac, m.rok));
+  const wplMiesiace = months6.map(m=>sumForMonth(allWpl, m.miesiac, m.rok));
+  const labels6 = months6.map(m=>m.label);
+
+  // ── WYKRES 2: Bilans — wpływy vs wydatki ──
+  if(chartBilans) chartBilans.destroy();
+  const ctxBilans = document.getElementById("chart-bilans").getContext("2d");
+  chartBilans = new Chart(ctxBilans, {
+    type: "bar",
+    data: {
+      labels: labels6,
+      datasets: [
+        { label:"Wpływy", data: wplMiesiace, backgroundColor:"rgba(52,211,153,0.7)", borderRadius:4 },
+        { label:"Wydatki", data: wydMiesiace, backgroundColor:"rgba(248,113,113,0.7)", borderRadius:4 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ font:{size:11}, boxWidth:12 } }, tooltip:{ callbacks:{ label: ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw)}` } } },
+      scales:{
+        x:{ grid:{color:gridColor}, ticks:{font:{size:10}} },
+        y:{ grid:{color:gridColor}, ticks:{ font:{size:10}, callback: v=>v>=1000?(v/1000).toFixed(1)+"k":v } }
+      }
+    }
+  });
+
+  // ── WYKRES 3: Trend wydatków miesiąc po miesiącu ──
+  if(chartTrend) chartTrend.destroy();
+  const ctxTrend = document.getElementById("chart-trend").getContext("2d");
+  chartTrend = new Chart(ctxTrend, {
+    type: "line",
+    data: {
+      labels: labels6,
+      datasets: [{
+        label:"Wydatki",
+        data: wydMiesiace,
+        borderColor:"#4da6ff",
+        backgroundColor:"rgba(77,166,255,0.1)",
+        borderWidth:2,
+        pointBackgroundColor:"#4da6ff",
+        pointRadius:4,
+        fill:true,
+        tension:0.3
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>`Wydatki: ${fmt(ctx.raw)}` } } },
+      scales:{
+        x:{ grid:{color:gridColor}, ticks:{font:{size:10}} },
+        y:{ grid:{color:gridColor}, ticks:{ font:{size:10}, callback: v=>v>=1000?(v/1000).toFixed(1)+"k":v } }
+      }
+    }
+  });
 }
 
 if(savedPin&&currentUser){
