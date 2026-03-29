@@ -134,6 +134,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .budget-row-right{text-align:right;flex-shrink:0;min-width:90px}
 .budget-spent{font-size:14px;font-weight:600;font-family:'DM Mono',monospace}
 .budget-loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
+
+.stale-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;cursor:pointer;transition:background .15s}
+.stale-item:last-child{border-bottom:none}
+.stale-item:active{background:var(--bg3)}
+.stale-item-body{flex:1;min-width:0}
+.stale-item-opis{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stale-item-meta{font-size:12px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace}
+.stale-item-kwota{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;flex-shrink:0;color:var(--green)}
+.stale-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-left:6px}
+.stale-badge.tak{background:rgba(52,211,153,0.15);color:var(--green)}
+.stale-badge.nie{background:rgba(107,106,122,0.15);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -187,9 +198,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
       <div class="section">
-        <button class="btn-submit" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);margin-bottom:8px" id="btn-skan" onclick="skanujParagon()"><span class="btn-text">📷 Skanuj paragon</span><div class="spinner"></div></button>
         <button class="btn-submit" id="btn-wydatek" onclick="submitWydatek()"><span class="btn-text">✓ Dodaj wydatek</span><div class="spinner"></div></button>
-        <input type="file" id="paragon-input" accept="image/*" capture="environment" style="display:none" onchange="handleParagonFile(this)">
       </div>
     </div>
 
@@ -207,6 +216,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div class="section">
         <button class="btn-submit" id="btn-wplyw" onclick="submitWplyw()"><span class="btn-text">✓ Dodaj wpływ</span><div class="spinner"></div></button>
+      </div>
+      <div class="section" style="margin-top:4px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="section-label" style="margin-bottom:0">Stałe wpływy</div>
+          <button onclick="otworzNowyStaly()" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 12px;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">+ Dodaj</button>
+        </div>
+        <div class="card" id="stale-list"><div class="history-empty" style="padding:20px">Ładowanie...</div></div>
       </div>
     </div>
 
@@ -379,6 +395,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+
+<!-- STAŁY WPŁYW SHEET -->
+<div class="sheet-overlay" id="staly-sheet">
+  <div class="sheet-box">
+    <h3 id="staly-title">Stały wpływ</h3>
+    <div class="edit-field"><div class="edit-label">Opis</div><input type="text" class="edit-input" id="staly-opis" placeholder="np. Wynagrodzenie Bartek"></div>
+    <div class="edit-field"><div class="edit-label">Kategoria</div>
+      <select class="edit-select" id="staly-kat">
+        <option>Wynagrodzenie</option><option>Premia</option><option>Freelance / zlecenie</option><option>Sprzedaż</option><option>Zwrot / refundacja</option><option>Pizzaparty</option><option>Makijaż</option><option>Włosy</option><option>Inne</option>
+      </select>
+    </div>
+    <div class="edit-field"><div class="edit-label">Kwota (zł)</div><input type="number" class="edit-input" id="staly-kwota" step="0.01" min="0" inputmode="decimal"></div>
+    <div class="edit-field"><div class="edit-label">Dzień miesiąca (1-31)</div><input type="number" class="edit-input" id="staly-dzien" min="1" max="31" inputmode="numeric"></div>
+    <div class="edit-field"><div class="edit-label">Kto otrzymuje</div>
+      <div class="owner-toggle" style="margin-top:4px">
+        <button class="owner-btn maz" id="staly-own-b" onclick="setStalyOwner('Mąż')">Bartek</button>
+        <button class="owner-btn zona" id="staly-own-w" onclick="setStalyOwner('Żona')">Weronika</button>
+      </div>
+    </div>
+    <div class="edit-field"><div class="edit-label">Aktywny</div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button id="staly-tak" onclick="setStalyAktywny('TAK')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--green);background:rgba(52,211,153,0.15);color:var(--green);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">TAK</button>
+        <button id="staly-nie" onclick="setStalyAktywny('NIE')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">NIE</button>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-cancel" onclick="closeStalySheet()">Anuluj</button>
+      <button class="btn-confirm-del" id="staly-del-btn" onclick="deleteStalyItem()" style="display:none">Usuń</button>
+      <button class="btn-save" onclick="saveStalyItem()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -489,6 +538,7 @@ function initApp(osoba){
   updateHistRangeLabel();
   updateBudzetMonthLabel();
   loadAllData();
+  loadStaleWplywy();
 }
 
 function switchScreen(n){
@@ -500,36 +550,6 @@ function switchScreen(n){
 }
 
 function showToast(msg,type="ok"){const t=document.getElementById("toast");t.textContent=msg;t.className="toast "+type+" show";setTimeout(()=>t.className="toast",2800)}
-
-// ── OCR PARAGON ──
-function skanujParagon(){
-  document.getElementById("paragon-input").click();
-}
-async function handleParagonFile(input){
-  if(!input.files||!input.files[0])return;
-  const btn=document.getElementById("btn-skan");
-  btn.classList.add("loading");
-  const file=input.files[0];
-  const reader=new FileReader();
-  reader.onload=async function(e){
-    const base64=e.target.result;
-    try{
-      const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"skanujParagon",obrazek:base64})});
-      const j=await r.json();
-      if(j.status==="ok"){
-        if(j.kwota)  document.getElementById("kwota").value=j.kwota;
-        if(j.sklep)  document.getElementById("opis").value=j.sklep;
-        if(j.kategoria) document.getElementById("kategoria").value=j.kategoria;
-        showToast("✓ Paragon odczytany!","ok");
-      } else {
-        showToast("❌ "+j.message,"fail");
-      }
-    }catch{showToast("❌ Brak połączenia","fail")}
-    btn.classList.remove("loading");
-    input.value="";
-  };
-  reader.readAsDataURL(file);
-}
 
 // ── SUBMIT ──
 async function submitWydatek(){
@@ -893,6 +913,123 @@ function renderCharts(kategorie, allWyd, allWpl){
       }
     }
   });
+}
+
+
+// ── STAŁE WPŁYWY ──
+let staleDane = [];
+let stalyEditItem = null;
+let stalyOwner = "Mąż";
+let stalyAktywny = "TAK";
+
+async function loadStaleWplywy(){
+  try{
+    const r=await fetch(API+"?action=pobierzStaleWplywy&pin="+savedPin);
+    const j=await r.json();
+    if(j.status==="ok"){staleDane=j.data||[];renderStaleWplywy()}
+  }catch{}
+}
+
+function renderStaleWplywy(){
+  const el=document.getElementById("stale-list");
+  if(!staleDane.length){el.innerHTML='<div class="history-empty" style="padding:20px">Brak stałych wpływów — dodaj pierwszy</div>';return}
+  el.innerHTML=staleDane.map(s=>{
+    const isMaz=s.kto==="Mąż";
+    const aktywny=String(s.aktywny).toUpperCase()==="TAK";
+    return`<div class="stale-item" onclick="otworzEdycjeStaly(${s.sheetRow})">
+      <div class="history-dot ${isMaz?"dot-maz":"dot-zona"}"></div>
+      <div class="stale-item-body">
+        <div class="stale-item-opis">${s.opis||s.kategoria}<span class="stale-badge ${aktywny?"tak":"nie"}">${aktywny?"TAK":"NIE"}</span></div>
+        <div class="stale-item-meta">${displayName(s.kto)} · ${s.kategoria} · ${s.dzien}. każdego miesiąca</div>
+      </div>
+      <div class="stale-item-kwota">${fmt(s.kwota)}</div>
+      <span style="color:var(--muted);font-size:12px;flex-shrink:0">›</span>
+    </div>`;
+  }).join("");
+}
+
+function otworzNowyStaly(){
+  stalyEditItem=null;
+  stalyOwner=currentKto||"Mąż";
+  stalyAktywny="TAK";
+  document.getElementById("staly-title").textContent="➕ Nowy stały wpływ";
+  document.getElementById("staly-opis").value="";
+  document.getElementById("staly-kat").value="Wynagrodzenie";
+  document.getElementById("staly-kwota").value="";
+  document.getElementById("staly-dzien").value="1";
+  document.getElementById("staly-del-btn").style.display="none";
+  setStalyOwner(stalyOwner);
+  setStalyAktywny("TAK");
+  document.getElementById("staly-sheet").classList.add("show");
+}
+
+function otworzEdycjeStaly(sheetRow){
+  const s=staleDane.find(i=>i.sheetRow===sheetRow);
+  if(!s)return;
+  stalyEditItem={...s};
+  stalyOwner=s.kto||"Mąż";
+  stalyAktywny=String(s.aktywny).toUpperCase()==="TAK"?"TAK":"NIE";
+  document.getElementById("staly-title").textContent="✏️ Edytuj stały wpływ";
+  document.getElementById("staly-opis").value=s.opis||"";
+  document.getElementById("staly-kat").value=s.kategoria||"Wynagrodzenie";
+  document.getElementById("staly-kwota").value=parseFloat(s.kwota)||"";
+  document.getElementById("staly-dzien").value=s.dzien||1;
+  document.getElementById("staly-del-btn").style.display="";
+  setStalyOwner(stalyOwner);
+  setStalyAktywny(stalyAktywny);
+  document.getElementById("staly-sheet").classList.add("show");
+}
+
+function setStalyOwner(kto){
+  stalyOwner=kto;
+  const isMaz=kto==="Mąż";
+  document.getElementById("staly-own-b").classList.toggle("active",isMaz);
+  document.getElementById("staly-own-w").classList.toggle("active",!isMaz);
+}
+
+function setStalyAktywny(val){
+  stalyAktywny=val;
+  const tak=document.getElementById("staly-tak");
+  const nie=document.getElementById("staly-nie");
+  if(val==="TAK"){
+    tak.style.borderColor="var(--green)";tak.style.background="rgba(52,211,153,0.15)";tak.style.color="var(--green)";
+    nie.style.borderColor="var(--border)";nie.style.background="transparent";nie.style.color="var(--muted)";
+  } else {
+    nie.style.borderColor="var(--red)";nie.style.background="rgba(248,113,113,0.15)";nie.style.color="var(--red)";
+    tak.style.borderColor="var(--border)";tak.style.background="transparent";tak.style.color="var(--muted)";
+  }
+}
+
+function closeStalySheet(){stalyEditItem=null;document.getElementById("staly-sheet").classList.remove("show")}
+
+async function saveStalyItem(){
+  const opis=document.getElementById("staly-opis").value;
+  const kat=document.getElementById("staly-kat").value;
+  const kwota=document.getElementById("staly-kwota").value;
+  const dzien=document.getElementById("staly-dzien").value;
+  if(!kwota||parseFloat(kwota)<=0){showToast("⚠️ Podaj kwotę","fail");return}
+  if(!dzien||parseInt(dzien)<1||parseInt(dzien)>31){showToast("⚠️ Podaj dzień 1-31","fail");return}
+  const payload={pin:savedPin,action:"zapiszStaly",opis,kategoria:kat,kwota,dzien,kto:stalyOwner,aktywny:stalyAktywny};
+  if(stalyEditItem)payload.rowIndex=stalyEditItem.sheetRow;
+  closeStalySheet();
+  try{
+    const r=await fetch(API,{method:"POST",body:JSON.stringify(payload)});
+    const j=await r.json();
+    if(j.status==="ok"){showToast("✓ Zapisano!","ok");loadStaleWplywy()}
+    else showToast("❌ "+j.message,"fail");
+  }catch{showToast("❌ Brak połączenia","fail")}
+}
+
+async function deleteStalyItem(){
+  if(!stalyEditItem)return;
+  const row=stalyEditItem.sheetRow;
+  closeStalySheet();
+  try{
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"usunStaly",rowIndex:row})});
+    const j=await r.json();
+    if(j.status==="ok"){showToast("✓ Usunięto","ok");loadStaleWplywy()}
+    else showToast("❌ "+j.message,"fail");
+  }catch{showToast("❌ Brak połączenia","fail")}
 }
 
 if(savedPin&&currentUser){
