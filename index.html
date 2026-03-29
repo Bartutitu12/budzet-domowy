@@ -198,7 +198,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
       <div class="section">
+        <button class="btn-submit" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);margin-bottom:8px" id="btn-skan" onclick="skanujParagon()"><span class="btn-text">📷 Skanuj paragon</span><div class="spinner"></div></button>
         <button class="btn-submit" id="btn-wydatek" onclick="submitWydatek()"><span class="btn-text">✓ Dodaj wydatek</span><div class="spinner"></div></button>
+        <input type="file" id="paragon-input" accept="image/*" capture="environment" style="display:none" onchange="handleParagonFile(this)">
       </div>
     </div>
 
@@ -550,6 +552,34 @@ function switchScreen(n){
 }
 
 function showToast(msg,type="ok"){const t=document.getElementById("toast");t.textContent=msg;t.className="toast "+type+" show";setTimeout(()=>t.className="toast",2800)}
+
+// ── OCR PARAGON ──
+function skanujParagon(){
+  document.getElementById("paragon-input").click();
+}
+async function handleParagonFile(input){
+  if(!input.files||!input.files[0])return;
+  const btn=document.getElementById("btn-skan");
+  btn.classList.add("loading");
+  const file=input.files[0];
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const base64=e.target.result;
+    try{
+      const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"skanujParagon",obrazek:base64})});
+      const j=await r.json();
+      if(j.status==="ok"){
+        if(j.kwota)  document.getElementById("kwota").value=j.kwota;
+        if(j.sklep)  document.getElementById("opis").value=j.sklep;
+        if(j.kategoria) document.getElementById("kategoria").value=j.kategoria;
+        showToast("✓ Paragon odczytany!","ok");
+      } else showToast("❌ "+j.message,"fail");
+    }catch{showToast("❌ Brak połączenia","fail")}
+    btn.classList.remove("loading");
+    input.value="";
+  };
+  reader.readAsDataURL(file);
+}
 
 // ── SUBMIT ──
 async function submitWydatek(){
