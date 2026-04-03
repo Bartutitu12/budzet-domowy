@@ -366,32 +366,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div><div class="header-title">🏗️ Budowa</div></div>
       <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudowa()">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
     </div>
+    <div class="add-switcher">
+      <button class="add-sw-btn active-wyd" id="bsw-dodaj"        onclick="setBudowaMode('dodaj')">➕ Dodaj</button>
+      <button class="add-sw-btn"            id="bsw-podsumowanie" onclick="setBudowaMode('podsumowanie')">📊 Podsumowanie</button>
+      <button class="add-sw-btn"            id="bsw-historia"     onclick="setBudowaMode('historia')">📋 Historia</button>
+    </div>
 
-    <!-- FORMULARZ DODAWANIA -->
-    <div class="section">
-      <div class="section-label">Szczegóły</div>
-      <div class="card">
-        <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="bud-kwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
-        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis</div><input type="text" id="bud-opis" placeholder="np. Beton fundamentowy..."></div></div>
-        <div class="field"><div class="field-icon">🏗️</div><div class="field-body"><div class="field-label">Poziom</div><select id="bud-poziom" onchange="updateBudPodkat()"><option value="">Wybierz poziom...</option><option>Poziom 1 – Fundamenty</option><option>Poziom 2 – Stan surowy otwarty</option><option>Poziom 3 – Stan surowy zamknięty</option><option>Poziom 4 – Stan deweloperski</option><option>Poziom 5 – Stan wykończony</option><option>Działka</option></select></div></div>
-        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Podkategoria</div><select id="bud-podkat"><option value="">Wybierz podkategorię...</option></select></div></div>
-        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="bud-data"></div></div>
+    <!-- PANEL: DODAJ -->
+    <div id="bpanel-dodaj" class="add-panel visible">
+      <div class="section">
+        <div class="section-label">Szczegóły</div>
+        <div class="card">
+          <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="bud-kwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
+          <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis</div><input type="text" id="bud-opis" placeholder="np. Beton fundamentowy..."></div></div>
+          <div class="field"><div class="field-icon">🏗️</div><div class="field-body"><div class="field-label">Poziom</div><select id="bud-poziom" onchange="updateBudPodkat()"><option value="">Wybierz poziom...</option><option>Poziom 1 – Fundamenty</option><option>Poziom 2 – Stan surowy otwarty</option><option>Poziom 3 – Stan surowy zamknięty</option><option>Poziom 4 – Stan deweloperski</option><option>Poziom 5 – Stan wykończony</option><option>Działka</option></select></div></div>
+          <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Podkategoria</div><select id="bud-podkat"><option value="">Wybierz podkategorię...</option></select></div></div>
+          <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="bud-data"></div></div>
+        </div>
+      </div>
+      <div class="section">
+        <button class="btn-submit" onclick="dodajBudowa()"><span class="btn-text">✓ Dodaj wydatek budowy</span><div class="spinner"></div></button>
       </div>
     </div>
-    <div class="section">
-      <button class="btn-submit" onclick="dodajBudowa()"><span class="btn-text">✓ Dodaj wydatek budowy</span><div class="spinner"></div></button>
+
+    <!-- PANEL: PODSUMOWANIE -->
+    <div id="bpanel-podsumowanie" class="add-panel">
+      <div class="section">
+        <div class="section-label">Poziomy — sumy i kumulatywne</div>
+        <div id="budowa-summary"><div class="budget-loading">Ładowanie...</div></div>
+      </div>
+      <div class="section">
+        <div class="section-label">Podkategorie</div>
+        <div id="budowa-podkat-table"><div class="budget-loading">Ładowanie...</div></div>
+      </div>
+      <div class="section">
+        <div class="section-label">Wydatki per poziom — wykres kołowy</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+          <canvas id="chart-bud-kolo" height="260"></canvas>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Wydatki per poziom — słupkowy</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+          <canvas id="chart-bud-stany" height="220"></canvas>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Wydatki per podkategoria</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+          <canvas id="chart-bud-podkat" height="260"></canvas>
+        </div>
+      </div>
     </div>
 
-    <!-- PODSUMOWANIE POZIOMÓW -->
-    <div class="section">
-      <div class="section-label">Podsumowanie poziomów</div>
-      <div id="budowa-summary"><div class="budget-loading">Ładowanie...</div></div>
-    </div>
-
-    <!-- LISTA WPISÓW -->
-    <div class="section">
-      <div class="section-label">Wszystkie wydatki</div>
-      <div class="card" id="budowa-list"><div class="budget-loading">Ładowanie...</div></div>
+    <!-- PANEL: HISTORIA -->
+    <div id="bpanel-historia" class="add-panel">
+      <div class="section">
+        <div class="card" id="budowa-list"><div class="budget-loading">Ładowanie...</div></div>
+      </div>
     </div>
   </div>
 
@@ -1149,6 +1181,15 @@ const BUDOWA_COLORS = {
 
 let budowaData = [];
 let budowaEditRow = null;
+let chartBudKolo = null, chartBudStany = null, chartBudPodkat = null;
+
+function setBudowaMode(mode){
+  document.querySelectorAll(".add-panel[id^='bpanel-']").forEach(p=>p.classList.remove("visible"));
+  document.querySelectorAll(".add-sw-btn[id^='bsw-']").forEach(b=>b.classList.remove("active-wyd"));
+  document.getElementById("bpanel-"+mode).classList.add("visible");
+  document.getElementById("bsw-"+mode).classList.add("active-wyd");
+  if(mode==="podsumowanie") renderBudowaCharts();
+}
 
 function updateBudPodkat(){
   const poziom = document.getElementById("bud-poziom").value;
@@ -1179,6 +1220,7 @@ async function loadBudowa(){
     if(j.status!=="ok") throw new Error(j.message);
     budowaData = j.data || [];
     renderBudowaSummary();
+    renderBudowaPodkatTable();
     renderBudowaList();
   }catch(e){
     document.getElementById("budowa-list").innerHTML=`<div style="padding:16px;color:var(--red);text-align:center">${e.message}</div>`;
@@ -1186,32 +1228,131 @@ async function loadBudowa(){
   }
 }
 
-function renderBudowaSummary(){
-  const sumy = {};
-  for(const p of Object.keys(BUDOWA_POZIOMY)) sumy[p]=0;
-  for(const w of budowaData) sumy[w.poziom]=(sumy[w.poziom]||0)+Number(w.kwota);
+function calcBudowaSumy(){
+  const sumy={}, podkatSumy={};
+  for(const p of Object.keys(BUDOWA_POZIOMY)){ sumy[p]=0; podkatSumy[p]={}; }
+  for(const w of budowaData){
+    const kwota=Number(w.kwota);
+    sumy[w.poziom]=(sumy[w.poziom]||0)+kwota;
+    if(!podkatSumy[w.poziom]) podkatSumy[w.poziom]={};
+    const pk=w.podkategoria||"Inne";
+    podkatSumy[w.poziom][pk]=(podkatSumy[w.poziom][pk]||0)+kwota;
+  }
+  return {sumy, podkatSumy};
+}
 
-  const dzialka = sumy["Działka"]||0;
-  let kumulatywna = 0;
-  let html = '';
+function renderBudowaSummary(){
+  const {sumy}=calcBudowaSumy();
+  let kumulatywna=0;
+  let html='';
   for(const [p,col] of Object.entries(BUDOWA_COLORS)){
-    const kwota = sumy[p]||0;
-    const isDzialka = p==="Działka";
+    const kwota=sumy[p]||0;
+    const isDzialka=p==="Działka";
     if(!isDzialka) kumulatywna+=kwota;
     html+=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <div>
         <div style="font-weight:600;font-size:13px;color:${col}">${p}</div>
-        ${!isDzialka?`<div style="font-size:11px;color:var(--muted);margin-top:2px">Kumulatywnie: ${fmtPLN(kumulatywna)}</div>`:'<div style="font-size:11px;color:var(--muted);margin-top:2px">Osobno (poza budową)</div>'}
+        ${!isDzialka?`<div style="font-size:11px;color:var(--muted);margin-top:2px">Kumulatywnie: ${fmtPLN(kumulatywna)}</div>`:`<div style="font-size:11px;color:var(--muted);margin-top:2px">Osobno (poza budową)</div>`}
       </div>
       <div style="font-size:16px;font-weight:700;color:${col}">${fmtPLN(kwota)}</div>
     </div>`;
   }
-  const total = Object.entries(sumy).filter(([k])=>k!=="Działka").reduce((a,[,v])=>a+v,0);
+  const total=Object.entries(sumy).filter(([k])=>k!=="Działka").reduce((a,[,v])=>a+v,0);
   html=`<div style="background:var(--bg2);border:2px solid var(--accent);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
     <div style="font-weight:700;font-size:14px">💰 SUMA CAŁKOWITA</div>
     <div style="font-size:20px;font-weight:700;color:var(--accent)">${fmtPLN(total)}</div>
   </div>`+html;
   document.getElementById("budowa-summary").innerHTML=html;
+}
+
+function renderBudowaPodkatTable(){
+  const {sumy,podkatSumy}=calcBudowaSumy();
+  let html='';
+  for(const [p,col] of Object.entries(BUDOWA_COLORS)){
+    const pkat=podkatSumy[p]||{};
+    const pozTotal=sumy[p]||0;
+    if(pozTotal===0) continue;
+    html+=`<div style="margin-bottom:12px">
+      <div style="font-weight:700;font-size:12px;color:${col};padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0">${p} — ${fmtPLN(pozTotal)}</div>`;
+    const podkats=BUDOWA_POZIOMY[p]||[];
+    for(const pk of podkats){
+      const v=pkat[pk]||0;
+      if(v===0) continue;
+      const pct=pozTotal>0?Math.round(v/pozTotal*100):0;
+      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg3)">
+        <div style="font-size:12px;color:var(--text)">${pk}</div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${fmtPLN(v)}</div>
+          <div style="font-size:10px;color:var(--muted)">${pct}%</div>
+        </div>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  document.getElementById("budowa-podkat-table").innerHTML=html||'<div style="padding:16px;text-align:center;color:var(--muted)">Brak danych</div>';
+}
+
+function renderBudowaCharts(){
+  const {sumy,podkatSumy}=calcBudowaSumy();
+  const gridColor="rgba(255,255,255,0.06)";
+
+  // ── WYKRES 1: kołowy per poziom ──
+  const poziomyLabels=Object.keys(BUDOWA_COLORS);
+  const poziomyVals=poziomyLabels.map(p=>sumy[p]||0);
+  const poziomyColors=Object.values(BUDOWA_COLORS);
+  if(chartBudKolo) chartBudKolo.destroy();
+  chartBudKolo=new Chart(document.getElementById("chart-bud-kolo").getContext("2d"),{
+    type:"doughnut",
+    data:{labels:poziomyLabels,datasets:[{data:poziomyVals,backgroundColor:poziomyColors,borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{
+      legend:{position:"right",labels:{font:{size:10},padding:8,boxWidth:12,color:"#ccc"}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${fmtPLN(ctx.raw)}`}}
+    },cutout:"55%"}
+  });
+
+  // ── WYKRES 2: słupkowy per poziom ──
+  const shortLabels=["P1 Fund.","P2 Sur.Otw","P3 Sur.Zam","P4 Dewel.","P5 Wykończ.","Działka"];
+  if(chartBudStany) chartBudStany.destroy();
+  chartBudStany=new Chart(document.getElementById("chart-bud-stany").getContext("2d"),{
+    type:"bar",
+    data:{labels:shortLabels,datasets:[{data:poziomyVals,backgroundColor:poziomyColors,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` ${fmtPLN(ctx.raw)}`}}
+    },scales:{
+      x:{grid:{color:gridColor},ticks:{font:{size:10},color:"#aaa"}},
+      y:{grid:{color:gridColor},ticks:{font:{size:10},color:"#aaa",callback:v=>v>=1000?(v/1000).toFixed(0)+"k zł":v+" zł"}}
+    }}
+  });
+
+  // ── WYKRES 3: słupkowy per podkategoria (Inne sumowane razem) ──
+  const podkatAgg={};
+  for(const [p,pkat] of Object.entries(podkatSumy)){
+    for(const [pk,v] of Object.entries(pkat)){
+      const key=pk==="Inne"?"Inne":pk;
+      podkatAgg[key]=(podkatAgg[key]||0)+v;
+    }
+  }
+  // Inne na końcu
+  const inne=podkatAgg["Inne"]||0;
+  delete podkatAgg["Inne"];
+  const sortedEntries=Object.entries(podkatAgg).sort((a,b)=>b[1]-a[1]);
+  if(inne>0) sortedEntries.push(["Inne",inne]);
+  const pkLabels=sortedEntries.map(([k])=>k);
+  const pkVals=sortedEntries.map(([,v])=>v);
+  const pkColors=pkLabels.map(l=>l==="Inne"?"rgba(149,165,166,0.7)":"rgba(77,166,255,0.75)");
+  if(chartBudPodkat) chartBudPodkat.destroy();
+  chartBudPodkat=new Chart(document.getElementById("chart-bud-podkat").getContext("2d"),{
+    type:"bar",
+    data:{labels:pkLabels,datasets:[{data:pkVals,backgroundColor:pkColors,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` ${fmtPLN(ctx.raw)}`}}
+    },scales:{
+      x:{grid:{color:gridColor},ticks:{font:{size:10},color:"#aaa",callback:v=>v>=1000?(v/1000).toFixed(0)+"k":v}},
+      y:{grid:{color:gridColor},ticks:{font:{size:10},color:"#aaa"}}
+    }}
+  });
 }
 
 function renderBudowaList(){
