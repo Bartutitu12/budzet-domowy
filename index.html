@@ -1296,16 +1296,10 @@ function renderBudowaPodkatTable(){
         </div>
       </div>`;
     }
-    html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg2)">
+    html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg2);border-radius:0 0 var(--radius) var(--radius)">
       <div style="font-size:12px;font-weight:600;color:var(--muted)">Suma poziomu</div>
       <div style="font-size:14px;font-weight:700;color:${col}">${fmtPLN(pozTotal)}</div>
     </div>`;
-    if(!isDzialka){
-      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg2);border-radius:0 0 var(--radius) var(--radius)">
-        <div style="font-size:12px;font-weight:600;color:var(--muted)">Kumulatywnie (P1–dotąd)</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">${fmtPLN(kumulatywna)}</div>
-      </div>`;
-    }
     html+=`</div>`;
   }
   document.getElementById("budowa-podkat-table").innerHTML=html||'<div style="padding:16px;text-align:center;color:var(--muted)">Brak danych</div>';
