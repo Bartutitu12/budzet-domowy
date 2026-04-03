@@ -369,14 +369,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- FORMULARZ DODAWANIA -->
     <div class="section">
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="section-label">Szczegóły</div>
+      <div class="card">
         <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="bud-kwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
-        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis</div><input type="text" id="bud-opis" placeholder="np. Beton fundamentowy..." style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;width:100%;box-sizing:border-box"></div></div>
+        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis</div><input type="text" id="bud-opis" placeholder="np. Beton fundamentowy..."></div></div>
         <div class="field"><div class="field-icon">🏗️</div><div class="field-body"><div class="field-label">Poziom</div><select id="bud-poziom" onchange="updateBudPodkat()"><option value="">Wybierz poziom...</option><option>Poziom 1 – Fundamenty</option><option>Poziom 2 – Stan surowy otwarty</option><option>Poziom 3 – Stan surowy zamknięty</option><option>Poziom 4 – Stan deweloperski</option><option>Poziom 5 – Stan wykończony</option><option>Działka</option></select></div></div>
         <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Podkategoria</div><select id="bud-podkat"><option value="">Wybierz podkategorię...</option></select></div></div>
-        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="bud-data" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;width:100%;box-sizing:border-box"></div></div>
-        <button class="btn-primary" onclick="dodajBudowa()" style="margin-top:4px">✓ Dodaj wydatek</button>
+        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="bud-data"></div></div>
       </div>
+    </div>
+    <div class="section">
+      <button class="btn-submit" onclick="dodajBudowa()"><span class="btn-text">✓ Dodaj wydatek budowy</span><div class="spinner"></div></button>
     </div>
 
     <!-- PODSUMOWANIE POZIOMÓW -->
