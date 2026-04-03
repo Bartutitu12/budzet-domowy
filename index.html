@@ -359,13 +359,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
 
+
+  <!-- SCREEN BUDOWA -->
+  <div id="screen-budowa" class="screen">
+    <div class="header">
+      <div><div class="header-title">🏗️ Budowa</div></div>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudowa()">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
+    </div>
+
+    <!-- FORMULARZ DODAWANIA -->
+    <div class="section">
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><div class="field-icon">💰</div><div class="field-body"><div class="field-label">Kwota</div><div class="amount-wrapper"><input type="number" id="bud-kwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div></div>
+        <div class="field"><div class="field-icon">📝</div><div class="field-body"><div class="field-label">Opis</div><input type="text" id="bud-opis" placeholder="np. Beton fundamentowy..." style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;width:100%;box-sizing:border-box"></div></div>
+        <div class="field"><div class="field-icon">🏗️</div><div class="field-body"><div class="field-label">Poziom</div><select id="bud-poziom" onchange="updateBudPodkat()"><option value="">Wybierz poziom...</option><option>Poziom 1 – Fundamenty</option><option>Poziom 2 – Stan surowy otwarty</option><option>Poziom 3 – Stan surowy zamknięty</option><option>Poziom 4 – Stan deweloperski</option><option>Poziom 5 – Stan wykończony</option><option>Działka</option></select></div></div>
+        <div class="field"><div class="field-icon">🏷️</div><div class="field-body"><div class="field-label">Podkategoria</div><select id="bud-podkat"><option value="">Wybierz podkategorię...</option></select></div></div>
+        <div class="field"><div class="field-icon">📅</div><div class="field-body"><div class="field-label">Data</div><input type="date" id="bud-data" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;width:100%;box-sizing:border-box"></div></div>
+        <button class="btn-primary" onclick="dodajBudowa()" style="margin-top:4px">✓ Dodaj wydatek</button>
+      </div>
+    </div>
+
+    <!-- PODSUMOWANIE POZIOMÓW -->
+    <div class="section">
+      <div class="section-label">Podsumowanie poziomów</div>
+      <div id="budowa-summary"><div class="budget-loading">Ładowanie...</div></div>
+    </div>
+
+    <!-- LISTA WPISÓW -->
+    <div class="section">
+      <div class="section-label">Wszystkie wydatki</div>
+      <div class="card" id="budowa-list"><div class="budget-loading">Ładowanie...</div></div>
+    </div>
+  </div>
+
 </div><!-- /app -->
+
+<!-- BUDOWA EDIT SHEET -->
+<div class="sheet-overlay" id="budowa-sheet">
+  <div class="sheet-box">
+    <h3>Edytuj wydatek budowy</h3>
+    <div class="edit-field"><div class="edit-label">Kwota</div><div class="amount-wrapper"><input type="number" class="edit-input" id="bedit-kwota" step="0.01" min="0" inputmode="decimal"><span class="amount-unit">zł</span></div></div>
+    <div class="edit-field"><div class="edit-label">Opis</div><input type="text" class="edit-input" id="bedit-opis"></div>
+    <div class="edit-field"><div class="edit-label">Poziom</div>
+      <select class="edit-select" id="bedit-poziom" onchange="updateBeditPodkat()">
+        <option>Poziom 1 – Fundamenty</option><option>Poziom 2 – Stan surowy otwarty</option><option>Poziom 3 – Stan surowy zamknięty</option><option>Poziom 4 – Stan deweloperski</option><option>Poziom 5 – Stan wykończony</option><option>Działka</option>
+      </select>
+    </div>
+    <div class="edit-field"><div class="edit-label">Podkategoria</div><select class="edit-select" id="bedit-podkat"></select></div>
+    <div class="edit-field"><div class="edit-label">Data</div><input type="date" class="edit-input" id="bedit-data"></div>
+    <div class="sheet-actions">
+      <button class="btn-cancel" onclick="closeBudowaSheet()">Anuluj</button>
+      <button class="btn-confirm-del" onclick="deleteBudowa()">Usuń</button>
+      <button class="btn-save" onclick="saveBudowa()">Zapisz</button>
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <button class="nav-btn active" id="nav-dodaj"   onclick="switchScreen('dodaj')"><span class="nav-icon">➕</span>Dodaj</button>
   <button class="nav-btn"        id="nav-historia" onclick="switchScreen('historia')"><span class="nav-icon">📋</span>Historia</button>
   <button class="nav-btn"        id="nav-budzet"   onclick="switchScreen('budzet')"><span class="nav-icon">🎯</span>Budżet</button>
+  <button class="nav-btn"        id="nav-budowa"   onclick="switchScreen('budowa')"><span class="nav-icon">🏗️</span>Budowa</button>
 </nav>
 
 <!-- EDIT SHEET -->
@@ -526,6 +581,7 @@ function initApp(osoba){
   document.getElementById("data-wydatek").value=t;
   document.getElementById("data-wplyw").value=t;
   document.getElementById("data-przelew").value=t;
+  document.getElementById("bud-data").value=t;
   document.getElementById("hist-dni-od").value=t;
   document.getElementById("hist-dni-do").value=t;
   const n=new Date();
@@ -549,6 +605,7 @@ function switchScreen(n){
   document.getElementById("screen-"+n).classList.add("active");
   document.getElementById("nav-"+n).classList.add("active");
   if(n==="budzet"){const now=new Date();budzetYearOd=now.getFullYear();budzetMonthOd=now.getMonth();budzetYearDo=now.getFullYear();budzetMonthDo=now.getMonth();updateBudzetMonthLabel();loadBudzet()}
+  if(n==="budowa") loadBudowa();
 }
 
 function showToast(msg,type="ok"){const t=document.getElementById("toast");t.textContent=msg;t.className="toast "+type+" show";setTimeout(()=>t.className="toast",2800)}
@@ -1067,6 +1124,181 @@ if(savedPin&&currentUser){
   document.getElementById("app").classList.add("visible");
   document.getElementById("bottom-nav").style.display="flex";
   initApp(currentUser);
+}
+
+// ── BUDOWA ──
+const BUDOWA_POZIOMY = {
+  "Poziom 1 – Fundamenty":           ["Inne"],
+  "Poziom 2 – Stan surowy otwarty":  ["Ściany","Dach","Inne"],
+  "Poziom 3 – Stan surowy zamknięty":["Okna+drzwi","Inne"],
+  "Poziom 4 – Stan deweloperski":    ["Elektryka","Hydraulika","Inne"],
+  "Poziom 5 – Stan wykończony":      ["Elewacja","Kuchnia","Łazienka","Pokój Alicja","Pokój Maurycy","Sypialnia","Salon","Kotłownia","Garderoba","Spiżarnia","Inne"],
+  "Działka":                         ["Prace na działce","Garaż","Inne"]
+};
+const BUDOWA_COLORS = {
+  "Poziom 1 – Fundamenty":           "#C0392B",
+  "Poziom 2 – Stan surowy otwarty":  "#E67E22",
+  "Poziom 3 – Stan surowy zamknięty":"#d4a017",
+  "Poziom 4 – Stan deweloperski":    "#27AE60",
+  "Poziom 5 – Stan wykończony":      "#2980B9",
+  "Działka":                         "#8E44AD"
+};
+
+let budowaData = [];
+let budowaEditRow = null;
+
+function updateBudPodkat(){
+  const poziom = document.getElementById("bud-poziom").value;
+  const sel = document.getElementById("bud-podkat");
+  sel.innerHTML = '<option value="">Wybierz podkategorię...</option>';
+  (BUDOWA_POZIOMY[poziom]||[]).forEach(p=>sel.innerHTML+=`<option>${p}</option>`);
+}
+
+function updateBeditPodkat(){
+  const poziom = document.getElementById("bedit-poziom").value;
+  const sel = document.getElementById("bedit-podkat");
+  const current = sel.value;
+  sel.innerHTML = '';
+  (BUDOWA_POZIOMY[poziom]||[]).forEach(p=>sel.innerHTML+=`<option${p===current?' selected':''}>${p}</option>`);
+}
+
+function fmtPLN(v){return Number(v).toLocaleString("pl-PL",{minimumFractionDigits:2,maximumFractionDigits:2})+" zł"}
+
+async function loadBudowa(){
+  document.getElementById("budowa-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
+  document.getElementById("budowa-summary").innerHTML='<div class="budget-loading">Ładowanie...</div>';
+  // ustaw dzisiejszą datę w formularzu
+  const today = new Date().toISOString().split("T")[0];
+  if(!document.getElementById("bud-data").value) document.getElementById("bud-data").value=today;
+  try{
+    const r = await fetch(`${API}?action=pobierzBudowa&pin=${savedPin}`);
+    const j = await r.json();
+    if(j.status!=="ok") throw new Error(j.message);
+    budowaData = j.data || [];
+    renderBudowaSummary();
+    renderBudowaList();
+  }catch(e){
+    document.getElementById("budowa-list").innerHTML=`<div style="padding:16px;color:var(--red);text-align:center">${e.message}</div>`;
+    document.getElementById("budowa-summary").innerHTML='';
+  }
+}
+
+function renderBudowaSummary(){
+  const sumy = {};
+  for(const p of Object.keys(BUDOWA_POZIOMY)) sumy[p]=0;
+  for(const w of budowaData) sumy[w.poziom]=(sumy[w.poziom]||0)+Number(w.kwota);
+
+  const dzialka = sumy["Działka"]||0;
+  let kumulatywna = 0;
+  let html = '';
+  for(const [p,col] of Object.entries(BUDOWA_COLORS)){
+    const kwota = sumy[p]||0;
+    const isDzialka = p==="Działka";
+    if(!isDzialka) kumulatywna+=kwota;
+    html+=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:600;font-size:13px;color:${col}">${p}</div>
+        ${!isDzialka?`<div style="font-size:11px;color:var(--muted);margin-top:2px">Kumulatywnie: ${fmtPLN(kumulatywna)}</div>`:'<div style="font-size:11px;color:var(--muted);margin-top:2px">Osobno (poza budową)</div>'}
+      </div>
+      <div style="font-size:16px;font-weight:700;color:${col}">${fmtPLN(kwota)}</div>
+    </div>`;
+  }
+  const total = Object.entries(sumy).filter(([k])=>k!=="Działka").reduce((a,[,v])=>a+v,0);
+  html=`<div style="background:var(--bg2);border:2px solid var(--accent);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-weight:700;font-size:14px">💰 SUMA CAŁKOWITA</div>
+    <div style="font-size:20px;font-weight:700;color:var(--accent)">${fmtPLN(total)}</div>
+  </div>`+html;
+  document.getElementById("budowa-summary").innerHTML=html;
+}
+
+function renderBudowaList(){
+  if(!budowaData.length){
+    document.getElementById("budowa-list").innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">Brak wpisów</div>';
+    return;
+  }
+  const html=budowaData.map(w=>{
+    const col=BUDOWA_COLORS[w.poziom]||"var(--muted)";
+    return`<div class="hist-item" onclick="openBudowaSheet(${w.sheetRow})">
+      <div class="hist-left">
+        <div class="hist-title">${w.opis||w.podkategoria||w.poziom}</div>
+        <div class="hist-sub" style="color:${col}">${w.poziom}${w.podkategoria?' · '+w.podkategoria:''}</div>
+        <div class="hist-sub">${w.data}</div>
+      </div>
+      <div class="hist-right">
+        <div class="hist-amount" style="color:var(--red)">−${fmtPLN(w.kwota)}</div>
+      </div>
+    </div>`;
+  }).join('<div class="hist-divider"></div>');
+  document.getElementById("budowa-list").innerHTML=html;
+}
+
+function openBudowaSheet(sheetRow){
+  const w=budowaData.find(x=>x.sheetRow===sheetRow);
+  if(!w) return;
+  budowaEditRow=sheetRow;
+  document.getElementById("bedit-kwota").value=w.kwota;
+  document.getElementById("bedit-opis").value=w.opis||"";
+  document.getElementById("bedit-data").value=w.data?w.data.split(".").reverse().join("-"):"";
+  document.getElementById("bedit-poziom").value=w.poziom;
+  updateBeditPodkat();
+  document.getElementById("bedit-podkat").value=w.podkategoria||"";
+  document.getElementById("budowa-sheet").classList.add("active");
+}
+
+function closeBudowaSheet(){
+  document.getElementById("budowa-sheet").classList.remove("active");
+  budowaEditRow=null;
+}
+
+async function dodajBudowa(){
+  const kwota=parseFloat(document.getElementById("bud-kwota").value);
+  const opis=document.getElementById("bud-opis").value.trim();
+  const poziom=document.getElementById("bud-poziom").value;
+  const podkat=document.getElementById("bud-podkat").value;
+  const data=document.getElementById("bud-data").value;
+  if(!kwota||kwota<=0) return showToast("Podaj kwotę","err");
+  if(!poziom) return showToast("Wybierz poziom","err");
+  if(!data) return showToast("Podaj datę","err");
+  try{
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"dodajBudowa",kwota,opis,poziom,podkategoria:podkat,data})});
+    const j=await r.json();
+    if(j.status!=="ok") throw new Error(j.message);
+    showToast("Dodano!");
+    document.getElementById("bud-kwota").value="";
+    document.getElementById("bud-opis").value="";
+    document.getElementById("bud-poziom").value="";
+    document.getElementById("bud-podkat").innerHTML='<option value="">Wybierz podkategorię...</option>';
+    loadBudowa();
+  }catch(e){showToast(e.message,"err")}
+}
+
+async function saveBudowa(){
+  const kwota=parseFloat(document.getElementById("bedit-kwota").value);
+  const opis=document.getElementById("bedit-opis").value.trim();
+  const poziom=document.getElementById("bedit-poziom").value;
+  const podkat=document.getElementById("bedit-podkat").value;
+  const data=document.getElementById("bedit-data").value;
+  if(!kwota||kwota<=0) return showToast("Podaj kwotę","err");
+  try{
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"edytujBudowa",rowIndex:budowaEditRow,kwota,opis,poziom,podkategoria:podkat,data})});
+    const j=await r.json();
+    if(j.status!=="ok") throw new Error(j.message);
+    showToast("Zapisano!");
+    closeBudowaSheet();
+    loadBudowa();
+  }catch(e){showToast(e.message,"err")}
+}
+
+async function deleteBudowa(){
+  if(!confirm("Usunąć ten wpis?")) return;
+  try{
+    const r=await fetch(API,{method:"POST",body:JSON.stringify({pin:savedPin,action:"usunBudowa",rowIndex:budowaEditRow})});
+    const j=await r.json();
+    if(j.status!=="ok") throw new Error(j.message);
+    showToast("Usunięto");
+    closeBudowaSheet();
+    loadBudowa();
+  }catch(e){showToast(e.message,"err")}
 }
 </script>
 </body>
