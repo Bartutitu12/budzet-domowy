@@ -1227,7 +1227,10 @@ async function loadBudowa(){
     const r = await fetch(`${API}?action=pobierzBudowa&pin=${savedPin}`);
     const j = await r.json();
     if(j.status!=="ok") throw new Error(j.message);
-    budowaData = j.data || [];
+    budowaData = (j.data || []).sort((a,b)=>{
+      const parse=d=>{ const [dd,mm,yyyy]=d.split('.'); return new Date(yyyy,mm-1,dd); };
+      return parse(b.data)-parse(a.data);
+    });
     renderBudowaSummary();
     renderBudowaPodkatTable();
     renderBudowaList();
