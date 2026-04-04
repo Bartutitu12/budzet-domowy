@@ -444,7 +444,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <h3 id="budowa-detail-title">Wpisy</h3>
     <div id="budowa-detail-list" style="max-height:60vh;overflow-y:auto"></div>
     <div class="sheet-actions" style="margin-top:12px">
-      <button class="btn-save" onclick="document.getElementById('budowa-detail-sheet').classList.remove('active')" style="width:100%">Zamknij</button>
+      <button class="btn-save" onclick="document.getElementById('budowa-detail-sheet').classList.remove('show')" style="width:100%">Zamknij</button>
     </div>
   </div>
 </div>
@@ -1197,7 +1197,7 @@ const BUDOWA_COLORS = {
   "Poziom 3 – Stan surowy zamknięty":"#d4a017",
   "Poziom 4 – Stan deweloperski":    "#27AE60",
   "Poziom 5 – Stan wykończony":      "#2980B9",
-  "Działka":                         "#8E44AD"
+  "Działka":                         "#e17055"
 };
 
 let budowaData = [];
@@ -1312,7 +1312,7 @@ function renderBudowaPodkatTable(){
       const v=pkat[pk]||0;
       if(v===0) continue;
       const pct=pozTotal>0?Math.round(v/pozTotal*100):0;
-      html+=`<div onclick="openBudowaDetail('${p.replace(/'/g,"\\'")}','${pk.replace(/'/g,"\\'")}')}" style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg3);cursor:pointer">
+      html+=`<div onclick="openBudowaDetail(this.dataset.p,this.dataset.pk)" data-p="${p.replace(/"/g,'&quot;')}" data-pk="${pk.replace(/"/g,'&quot;')}" style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg3);cursor:pointer">
         <div style="font-size:12px;color:var(--text)">${pk}</div>
         <div style="text-align:right;display:flex;align-items:center;gap:8px">
           <div>
@@ -1352,7 +1352,7 @@ function openBudowaDetail(poziom, podkat){
         <div style="font-size:14px;font-weight:600;color:var(--red)">−${fmtPLN(w.kwota)}</div>
       </div>`).join('')
     :'<div style="padding:16px;text-align:center;color:var(--muted)">Brak wpisów</div>');
-  document.getElementById("budowa-detail-sheet").classList.add("active");
+  document.getElementById("budowa-detail-sheet").classList.add("show");
 }
 
 function renderBudowaCharts(){
@@ -1471,11 +1471,11 @@ function openBudowaSheet(sheetRow){
   document.getElementById("bedit-poziom").value=w.poziom;
   updateBeditPodkat();
   document.getElementById("bedit-podkat").value=w.podkategoria||"";
-  document.getElementById("budowa-sheet").classList.add("active");
+  document.getElementById("budowa-sheet").classList.add("show");
 }
 
 function closeBudowaSheet(){
-  document.getElementById("budowa-sheet").classList.remove("active");
+  document.getElementById("budowa-sheet").classList.remove("show");
   budowaEditRow=null;
 }
 
