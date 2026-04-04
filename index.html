@@ -743,8 +743,9 @@ async function loadAllData(){
   try{
     const[rw,ri]=await Promise.all([fetch(API+"?action=pobierzWydatki&pin="+savedPin),fetch(API+"?action=pobierzWplywy&pin="+savedPin)]);
     const jw=await rw.json();const ji=await ri.json();
-    if(jw.status==="ok")allWydatki=jw.data||[];
-    if(ji.status==="ok")allWplywy=ji.data||[];
+    const sortByDate=arr=>arr.sort((a,b)=>{const p=d=>{const[dd,mm,yyyy]=d.split('.');return new Date(yyyy,mm-1,dd)};return p(b.data)-p(a.data)});
+    if(jw.status==="ok")allWydatki=sortByDate(jw.data||[]);
+    if(ji.status==="ok")allWplywy=sortByDate(ji.data||[]);
     renderHistory();
   }catch{showToast("❌ Błąd ładowania","fail")}
 }
