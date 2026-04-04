@@ -438,6 +438,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 </div><!-- /app -->
 
+<!-- BUDOWA DETAIL SHEET -->
+<div class="sheet-overlay" id="budowa-detail-sheet">
+  <div class="sheet-box">
+    <h3 id="budowa-detail-title">Wpisy</h3>
+    <div id="budowa-detail-list" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="sheet-actions" style="margin-top:12px">
+      <button class="btn-save" onclick="document.getElementById('budowa-detail-sheet').classList.remove('active')" style="width:100%">Zamknij</button>
+    </div>
+  </div>
+</div>
+
 <!-- BUDOWA EDIT SHEET -->
 <div class="sheet-overlay" id="budowa-sheet">
   <div class="sheet-box">
@@ -1301,11 +1312,14 @@ function renderBudowaPodkatTable(){
       const v=pkat[pk]||0;
       if(v===0) continue;
       const pct=pozTotal>0?Math.round(v/pozTotal*100):0;
-      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg3)">
+      html+=`<div onclick="openBudowaDetail('${p.replace(/'/g,"\\'")}','${pk.replace(/'/g,"\\'")}')}" style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid var(--border);border-top:none;background:var(--bg3);cursor:pointer">
         <div style="font-size:12px;color:var(--text)">${pk}</div>
-        <div style="text-align:right">
-          <div style="font-size:13px;font-weight:600;color:var(--text)">${fmtPLN(v)}</div>
-          <div style="font-size:10px;color:var(--muted)">${pct}%</div>
+        <div style="text-align:right;display:flex;align-items:center;gap:8px">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${fmtPLN(v)}</div>
+            <div style="font-size:10px;color:var(--muted)">${pct}%</div>
+          </div>
+          <span style="color:var(--muted);font-size:12px">›</span>
         </div>
       </div>`;
     }
@@ -1316,6 +1330,29 @@ function renderBudowaPodkatTable(){
     html+=`</div>`;
   }
   document.getElementById("budowa-podkat-table").innerHTML=html||'<div style="padding:16px;text-align:center;color:var(--muted)">Brak danych</div>';
+}
+
+function openBudowaDetail(poziom, podkat){
+  const wpisy=budowaData.filter(w=>w.poziom===poziom&&(w.podkategoria||"Inne")===podkat);
+  const col=BUDOWA_COLORS[poziom]||"var(--accent)";
+  const total=wpisy.reduce((s,w)=>s+Number(w.kwota),0);
+  document.getElementById("budowa-detail-title").innerHTML=
+    `<span style="color:${col}">${podkat}</span><div style="font-size:12px;color:var(--muted);font-weight:400;margin-top:2px">${poziom}</div>`;
+  document.getElementById("budowa-detail-list").innerHTML=
+    `<div style="padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px;display:flex;justify-content:space-between">
+      <span style="font-size:12px;color:var(--muted)">${wpisy.length} wpisów</span>
+      <span style="font-size:14px;font-weight:700;color:${col}">${fmtPLN(total)}</span>
+    </div>`+
+    (wpisy.length?wpisy.map(w=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13px;color:var(--text)">${w.opis||'—'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${w.data}</div>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:var(--red)">−${fmtPLN(w.kwota)}</div>
+      </div>`).join('')
+    :'<div style="padding:16px;text-align:center;color:var(--muted)">Brak wpisów</div>');
+  document.getElementById("budowa-detail-sheet").classList.add("active");
 }
 
 function renderBudowaCharts(){
