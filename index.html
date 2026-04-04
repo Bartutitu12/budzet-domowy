@@ -364,7 +364,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="screen-budowa" class="screen">
     <div class="header">
       <div><div class="header-title">🏗️ Budowa</div></div>
-      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudowa()">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
+      <div style="display:flex;gap:8px"><button class="refresh-btn" onclick="loadBudowa(true)">↻</button><button class="refresh-btn" onclick="clearSession()">🔓</button></div>
     </div>
     <div class="add-switcher">
       <button class="add-sw-btn active-wyd" id="bsw-dodaj"        onclick="setBudowaMode('dodaj')">➕ Dodaj</button>
@@ -1203,13 +1203,15 @@ const BUDOWA_COLORS = {
 let budowaData = [];
 let budowaEditRow = null;
 let chartBudKolo = null, chartBudStany = null, chartBudPodkat = null;
+let budowaLoaded = false;
+let budowaChartsDirty = true;
 
 function setBudowaMode(mode){
   document.querySelectorAll(".add-panel[id^='bpanel-']").forEach(p=>p.classList.remove("visible"));
   document.querySelectorAll(".add-sw-btn[id^='bsw-']").forEach(b=>b.classList.remove("active-wyd"));
   document.getElementById("bpanel-"+mode).classList.add("visible");
   document.getElementById("bsw-"+mode).classList.add("active-wyd");
-  if(mode==="podsumowanie") renderBudowaCharts();
+  if(mode==="podsumowanie" && budowaChartsDirty) { renderBudowaCharts(); budowaChartsDirty=false; }
 }
 
 function updateBudPodkat(){
@@ -1229,12 +1231,12 @@ function updateBeditPodkat(){
 
 function fmtPLN(v){return Number(v).toLocaleString("pl-PL",{minimumFractionDigits:2,maximumFractionDigits:2})+" zł"}
 
-async function loadBudowa(){
-  document.getElementById("budowa-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
-  document.getElementById("budowa-summary").innerHTML='<div class="budget-loading">Ładowanie...</div>';
-  // ustaw dzisiejszą datę w formularzu
+async function loadBudowa(force=false){
   const today = new Date().toISOString().split("T")[0];
   if(!document.getElementById("bud-data").value) document.getElementById("bud-data").value=today;
+  if(budowaLoaded && !force) return;
+  document.getElementById("budowa-list").innerHTML='<div class="budget-loading">Ładowanie...</div>';
+  document.getElementById("budowa-summary").innerHTML='<div class="budget-loading">Ładowanie...</div>';
   try{
     const r = await fetch(`${API}?action=pobierzBudowa&pin=${savedPin}`);
     const j = await r.json();
@@ -1243,6 +1245,8 @@ async function loadBudowa(){
       const parse=d=>{ const [dd,mm,yyyy]=d.split('.'); return new Date(yyyy,mm-1,dd); };
       return parse(b.data)-parse(a.data);
     });
+    budowaLoaded = true;
+    budowaChartsDirty = true;
     renderBudowaSummary();
     renderBudowaPodkatTable();
     renderBudowaList();
@@ -1497,6 +1501,7 @@ async function dodajBudowa(){
     document.getElementById("bud-opis").value="";
     document.getElementById("bud-poziom").value="";
     document.getElementById("bud-podkat").innerHTML='<option value="">Wybierz podkategorię...</option>';
+    budowaLoaded=false;
     loadBudowa();
   }catch(e){showToast(e.message,"err")}
 }
@@ -1514,7 +1519,7 @@ async function saveBudowa(){
     if(j.status!=="ok") throw new Error(j.message);
     showToast("Zapisano!");
     closeBudowaSheet();
-    loadBudowa();
+    budowaLoaded=false; loadBudowa();
   }catch(e){showToast(e.message,"err")}
 }
 
@@ -1526,7 +1531,7 @@ async function deleteBudowa(){
     if(j.status!=="ok") throw new Error(j.message);
     showToast("Usunięto");
     closeBudowaSheet();
-    loadBudowa();
+    budowaLoaded=false; loadBudowa();
   }catch(e){showToast(e.message,"err")}
 }
 </script>
