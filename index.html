@@ -421,8 +421,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- PANEL: HISTORIA -->
     <div id="bpanel-historia" class="add-panel">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Razem</div><div class="stat-value stat-total" id="bud-stat-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Wpisów</div><div class="stat-value stat-cnt" id="bud-stat-count">—</div></div>
+      </div>
       <div class="section">
-        <div class="card" id="budowa-list"><div class="budget-loading">Ładowanie...</div></div>
+        <div class="section-label">Wydatki</div>
+        <div class="card" id="budowa-list"><div class="history-empty">Ładowanie...</div></div>
+      </div>
+      <div class="section">
+        <div class="section-label">Per poziom</div>
+        <div class="card" id="budowa-hist-poziomy"></div>
       </div>
     </div>
   </div>
@@ -1369,24 +1378,46 @@ function renderBudowaCharts(){
 }
 
 function renderBudowaList(){
+  // stats
+  const total=budowaData.reduce((s,w)=>s+Number(w.kwota),0);
+  document.getElementById("bud-stat-total").textContent=fmtPLN(total);
+  document.getElementById("bud-stat-count").textContent=budowaData.length;
+
+  // lista
   if(!budowaData.length){
-    document.getElementById("budowa-list").innerHTML='<div style="padding:20px;text-align:center;color:var(--muted)">Brak wpisów</div>';
+    document.getElementById("budowa-list").innerHTML='<div class="history-empty">Brak wpisów</div>';
+    document.getElementById("budowa-hist-poziomy").innerHTML='';
     return;
   }
-  const html=budowaData.map(w=>{
+  document.getElementById("budowa-list").innerHTML=budowaData.map(w=>{
     const col=BUDOWA_COLORS[w.poziom]||"var(--muted)";
-    return`<div class="hist-item" onclick="openBudowaSheet(${w.sheetRow})">
-      <div class="hist-left">
-        <div class="hist-title">${w.opis||w.podkategoria||w.poziom}</div>
-        <div class="hist-sub" style="color:${col}">${w.poziom}${w.podkategoria?' · '+w.podkategoria:''}</div>
-        <div class="hist-sub">${w.data}</div>
+    return`<div class="history-item" onclick="openBudowaSheet(${w.sheetRow})">
+      <div class="history-dot" style="background:${col}"></div>
+      <div class="history-body">
+        <div class="history-desc">${w.opis||w.podkategoria||w.poziom}</div>
+        <div class="history-meta">${w.data} · <span style="color:${col}">${w.poziom}${w.podkategoria?' · '+w.podkategoria:''}</span></div>
       </div>
-      <div class="hist-right">
-        <div class="hist-amount" style="color:var(--red)">−${fmtPLN(w.kwota)}</div>
-      </div>
+      <div class="history-amount amt-zona">${fmtPLN(w.kwota)}</div>
+      <span style="color:var(--muted);font-size:12px;flex-shrink:0">›</span>
     </div>`;
-  }).join('<div class="hist-divider"></div>');
-  document.getElementById("budowa-list").innerHTML=html;
+  }).join('');
+
+  // per poziom
+  const pozMap={};
+  budowaData.forEach(w=>{ pozMap[w.poziom]=(pozMap[w.poziom]||0)+Number(w.kwota); });
+  const sorted=Object.entries(BUDOWA_COLORS)
+    .map(([p,col])=>({p,col,kwota:pozMap[p]||0}))
+    .filter(x=>x.kwota>0);
+  document.getElementById("budowa-hist-poziomy").innerHTML=sorted.map(({p,col,kwota})=>{
+    const pct=total>0?Math.round(kwota/total*100):0;
+    return`<div class="budget-row">
+      <div class="budget-row-left">
+        <div class="budget-row-name">${p}</div>
+        <div class="budget-bar-wrap"><div class="budget-bar" style="width:${pct}%;background:${col}"></div></div>
+      </div>
+      <div class="budget-row-right"><div class="budget-spent" style="color:${col}">${fmtPLN(kwota)}</div></div>
+    </div>`;
+  }).join('');
 }
 
 function openBudowaSheet(sheetRow){
