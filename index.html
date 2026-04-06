@@ -1211,7 +1211,7 @@ function setBudowaMode(mode){
   document.querySelectorAll(".add-sw-btn[id^='bsw-']").forEach(b=>b.classList.remove("active-wyd"));
   document.getElementById("bpanel-"+mode).classList.add("visible");
   document.getElementById("bsw-"+mode).classList.add("active-wyd");
-  if(mode==="podsumowanie" && budowaChartsDirty) { renderBudowaCharts(); budowaChartsDirty=false; }
+  if(mode==="podsumowanie" && budowaLoaded) renderBudowaCharts();
 }
 
 function updateBudPodkat(){
@@ -1246,10 +1246,10 @@ async function loadBudowa(force=false){
       return parse(b.data)-parse(a.data);
     });
     budowaLoaded = true;
-    budowaChartsDirty = true;
     renderBudowaSummary();
     renderBudowaPodkatTable();
     renderBudowaList();
+    if(document.getElementById("bpanel-podsumowanie").classList.contains("visible")) renderBudowaCharts();
   }catch(e){
     document.getElementById("budowa-list").innerHTML=`<div style="padding:16px;color:var(--red);text-align:center">${e.message}</div>`;
     document.getElementById("budowa-summary").innerHTML='';
