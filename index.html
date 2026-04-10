@@ -438,6 +438,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 </div><!-- /app -->
 
+<!-- BUDZET KAT DETAIL SHEET -->
+<div class="sheet-overlay" id="budzet-kat-sheet">
+  <div class="sheet-box">
+    <h3 id="budzet-kat-title">Kategoria</h3>
+    <div id="budzet-kat-list" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="sheet-actions" style="margin-top:12px">
+      <button class="btn-save" onclick="document.getElementById('budzet-kat-sheet').classList.remove('show')" style="width:100%">Zamknij</button>
+    </div>
+  </div>
+</div>
+
 <!-- BUDOWA DETAIL SHEET -->
 <div class="sheet-overlay" id="budowa-detail-sheet">
   <div class="sheet-box">
@@ -948,13 +959,13 @@ async function loadBudzet(){
     const rows=(j.kategorie||[]).filter(k=>k.razem>0);
     if(!rows.length){document.getElementById("budzet-list").innerHTML='<div class="budget-loading">Brak wydatków w tym zakresie</div>';return}
     document.getElementById("budzet-list").innerHTML=rows.map(k=>{      const mazPct=k.razem>0?Math.round(k.maz/k.razem*100):0;
-      return`<div class="budget-row">
+      return`<div class="budget-row" onclick="openBudzetKatDetail('${k.nazwa.replace(/'/g,"&#39;")}')" style="cursor:pointer">
         <div class="budget-row-left">
           <div class="budget-row-name">${k.nazwa}</div>
           <div class="budget-bar-wrap" style="margin:5px 0 3px"><div style="height:100%;display:flex;border-radius:2px;overflow:hidden"><div style="width:${mazPct}%;background:var(--man);transition:width .6s"></div><div style="width:${100-mazPct}%;background:var(--wife);transition:width .6s"></div></div></div>
           <div style="display:flex;gap:10px;font-size:11px"><span style="color:var(--man)">👨 ${fmt(k.maz)}</span><span style="color:var(--wife)">👩 ${fmt(k.zona)}</span></div>
         </div>
-        <div class="budget-row-right"><div class="budget-spent">${fmt(k.razem)}</div></div>
+        <div class="budget-row-right" style="display:flex;align-items:center;gap:6px"><div class="budget-spent">${fmt(k.razem)}</div><span style="color:var(--muted);font-size:12px">›</span></div>
       </div>`;
     }).join("");
     // Rysuj wykresy po załadowaniu danych
@@ -1334,6 +1345,41 @@ function renderBudowaPodkatTable(){
     html+=`</div>`;
   }
   document.getElementById("budowa-podkat-table").innerHTML=html||'<div style="padding:16px;text-align:center;color:var(--muted)">Brak danych</div>';
+}
+
+function openBudzetKatDetail(nazwa){
+  // filtruj allWydatki po kategorii i zakresie dat budżetu
+  const wpisy = allWydatki.filter(w => {
+    if(w.kategoria !== nazwa) return false;
+    const ri = MP.indexOf(w.miesiac), rr = parseInt(w.rok);
+    const odOk = rr > budzetYearOd || (rr === budzetYearOd && ri >= budzetMonthOd);
+    const doOk = rr < budzetYearDo || (rr === budzetYearDo && ri <= budzetMonthDo);
+    return odOk && doOk;
+  });
+  const totalMaz = wpisy.filter(w=>w.kto==="Mąż").reduce((s,w)=>s+(parseFloat(w.kwota)||0),0);
+  const totalZona = wpisy.filter(w=>w.kto==="Żona").reduce((s,w)=>s+(parseFloat(w.kwota)||0),0);
+  const total = totalMaz + totalZona;
+  document.getElementById("budzet-kat-title").textContent = nazwa;
+  document.getElementById("budzet-kat-list").innerHTML =
+    `<div style="display:flex;justify-content:space-between;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div style="font-size:12px;color:var(--muted)">${wpisy.length} wpisów</div>
+      <div style="display:flex;gap:12px;font-size:12px">
+        <span style="color:var(--man)">👨 ${fmt(totalMaz)}</span>
+        <span style="color:var(--wife)">👩 ${fmt(totalZona)}</span>
+        <span style="font-weight:700">${fmt(total)}</span>
+      </div>
+    </div>` +
+    (wpisy.length ? wpisy.map(w => {
+      const isMaz = w.kto === "Mąż";
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13px;color:var(--text)">${w.opis || w.kategoria}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${w.data} · <span style="color:${isMaz?'var(--man)':'var(--wife)'}">${displayName(w.kto)}</span></div>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:var(--red)">−${fmt(w.kwota)}</div>
+      </div>`;
+    }).join('') : '<div style="padding:16px;text-align:center;color:var(--muted)">Brak wpisów</div>');
+  document.getElementById("budzet-kat-sheet").classList.add("show");
 }
 
 function openBudowaDetail(poziom, podkat){
